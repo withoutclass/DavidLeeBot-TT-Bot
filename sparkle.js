@@ -351,9 +351,13 @@ bot.on('endsong', function (data) {
 
 	//Report song stats in chat
 	if (config.responses.reportsongstats) {
-		bot.speak(currentsong.song + ' stats: awesomes: '
-			+ currentsong.up + ' lames: ' + currentsong.down
-			+ ' snags: ' + currentsong.snags);
+		var awesomes = currentsong.up == 1 ? "awesome, " : "awesomes, ";
+		var lames = currentsong.down == 1 ? "lame, " : "lames, ";
+		var snags = currentsong.snags == 1 ? "snag." : "snags.";
+		
+		bot.speak(':musical_note: ' + currentsong.song + ' stats: '
+			+ currentsong.up + awesomes + currentsong.down
+			+ lames + currentsong.snags + snags);
 	}
     
     
@@ -1387,7 +1391,7 @@ function handleCommand (name, userid, text, source) {
     
     //Outputs github url for xxMEOWxx
 		case '.source':
-        var response = ('My source code is available at: http://git.io/meow');
+        var response = ('My source code is available at: http://git.io/bsbot');
         output({text: response, destination: source, userid: userid});
         break;
 
