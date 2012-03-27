@@ -7,7 +7,7 @@
 	{"mainadmin":"#####",
 	"admins": ["#####"] },
 "database":
-	{"usedb":true,
+	{"usedb":false,
 	"dbname":"nodejs_mysql_treehouse", 
     "logchat":false,
 	"tablenames": 
@@ -19,7 +19,7 @@
 		"user":"#####",
 		"password":"#####"}},
 "lastfm":
-	{"useapi":true,
+	{"useapi":false,
 	"lastfmkey":"#####"},
 "tcp":
 	 {"usetcp": true, 
@@ -31,16 +31,16 @@
 	"welcomeusers":true,
     "welcomepm":true,
 	"greeting":"Welcome, ",
-	"ownerresponse":"sharedferret made me!",
-	"sing":true, 
+	"ownerresponse":"sharedferret made me, BeSublime customized me!",
+	"sing":false, 
 	"rules": 
-		{"description": "No queue, fastest finger, play two songs and step down", 
+		{"description": "No queue, fastest finger, be friendly :)", 
 		"link": "http://tinyurl.com/63hr2jl"}
 	},
 "consolelog":false,
 "bonusvote":"VOTE",
 "enforcement":
-	{"enforceroom":true,
+	{"enforceroom":false,
     "waitlist":false,
 	"songstoplay":2,
 	"stepuprules":
