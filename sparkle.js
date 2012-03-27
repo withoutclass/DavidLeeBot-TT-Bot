@@ -237,22 +237,19 @@ bot.on('registered',   function (data) {
                         var curtime = results[0]['now'];
                         //Send a welcome PM if user hasn't joined in 36+ hours
                         if ((new Date().getTime() - time.getTime()) > 129600000) {
-                            output({text: 'Welcome to Indie/Classic Alternative 1 & Done! No queue, fastest finger, '
-                            + 'play one song and step down. Full rules at http://tinyurl.com/63hr2jl . Type '
-                            + '\'commands\' to see a list of commands I can respond to.',
+                            output({text: 'Welcome to East Coast Indie! No queue, fastest finger, be friendly! '
+                            + 'Type \'commands\' to see a list of commands I can respond to.',
                             destination: 'pm', userid: user.userid});
                         }
                     } else {
-                        output({text: 'Welcome to Indie/Classic Alternative 1 & Done! No queue, fastest finger, '
-                            + 'play one song and step down. Full rules at http://tinyurl.com/63hr2jl . Type '
-                            + '\'commands\' to see a list of commands I can respond to.',
+                        output({text: 'Welcome to East Coast Indie! No queue, fastest finger, be friendly! '
+                            + 'Type \'commands\' to see a list of commands I can respond to.',
                             destination: 'pm', userid: user.userid});
                     }
             });
         } else {
-            output({text: 'Welcome to Indie/Classic Alternative 1 & Done! No queue, fastest finger, '
-                + 'play one song and step down. Full rules at http://tinyurl.com/63hr2jl . Type '
-                + '\'commands\' to see a list of commands I can respond to.',
+            output({text: 'Welcome to East Coast Indie! No queue, fastest finger, be friendly! '
+                + 'Type \'commands\' to see a list of commands I can respond to.',
                 destination: 'pm', userid: user.userid});
         }
     }
@@ -1431,8 +1428,10 @@ function handleCommand (name, userid, text, source) {
     //Rules rehash since xxRAWRxx only responds to .rules
     //TODO: Generate rules based on bot options
 		case 'rules':
-			var response = ('You can view the rules here: ' + config.responses.rules.link);
-            output({text: response, destination: source, userid: userid});
+			if (config.responses.rules.link != null && config.responses.rules.link!= "") {
+				var response = ('You can view the rules here: ' + config.responses.rules.link);
+	            output({text: response, destination: source, userid: userid});
+	        }
 			setTimeout(function() {
 				var response = (config.responses.rules.description);
                 output({text: response, destination: source, userid: userid});
