@@ -351,9 +351,9 @@ bot.on('endsong', function (data) {
 
 	//Report song stats in chat
 	if (config.responses.reportsongstats) {
-		var awesomes = currentsong.up == 1 ? "awesome, " : "awesomes, ";
-		var lames = currentsong.down == 1 ? "lame, " : "lames, ";
-		var snags = currentsong.snags == 1 ? "snag." : "snags.";
+		var awesomes = currentsong.up == 1 ? " awesome, " : " awesomes, ";
+		var lames = currentsong.down == 1 ? " lame, " : " lames, ";
+		var snags = currentsong.snags == 1 ? " snag." : " snags.";
 		
 		bot.speak(':musical_note: ' + currentsong.song + ' stats: '
 			+ currentsong.up + awesomes + currentsong.down
