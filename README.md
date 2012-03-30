@@ -137,6 +137,7 @@ The bot will respond to these commands in chat in a Turntable.fm room.
 * platforms - Returns the number of each type of computer (pc, linux, mac, chrome, iPhone) in the room.
 
 ### Room enforcement commands
+(these are all currently disabled, as the waitlist functionality is turned off for this particular instance of this bot)
 
 * waitdjs - Displays a list of DJs that must wait before stepping up again, and how long they must wait.
 
@@ -147,6 +148,7 @@ The bot will respond to these commands in chat in a Turntable.fm room.
 * any spots opening soon?, anyone stepping down soon? - Displays the next DJ to step down, and how many songs they have remaining.
 
 ### Waitlist commands
+(also currently disabled, see above)
 
 * .add, .addme, +q - Adds user to waitlist/queue
 
@@ -214,6 +216,8 @@ These commands can only be performed by admins of the bot.
 * .a - Tells the bot to awesome the current song.
 
 * .l - Tells the bot to lame the current song.
+
+* .q - Tells the bot to snag the current song (add to the bot's queue).
 
 * skipwait [user] - (Enforcement only) Removes the user from the past DJ list so they can step up again.
 

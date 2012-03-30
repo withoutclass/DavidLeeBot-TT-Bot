@@ -745,6 +745,13 @@ function admincheck(userid) {
 	return false;
 }
 
+//Add the currently playing song to the bot's queue
+function snagSong() {
+	bot.snag(function() {
+		bot.speak('Heart fart! <3');
+	});
+}
+
 //The bot will respond to a Reptar call with a variant of 'rawr!' based on
 //the result from a RNG.
 function reptarCall(source) {
@@ -2093,6 +2100,13 @@ function handleCommand (name, userid, text, source) {
     case '\.l':
         if (admincheck(userid)) {
             bot.vote('down');
+        }
+        break;
+        
+    //Tells bot to lame the current song
+    case '\.q':
+        if (admincheck(userid)) {
+            snagSong();
         }
         break;
 
