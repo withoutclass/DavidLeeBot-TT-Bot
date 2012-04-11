@@ -136,6 +136,10 @@ The bot will respond to these commands in chat in a Turntable.fm room.
 
 * platforms - Returns the number of each type of computer (pc, linux, mac, chrome, iPhone) in the room.
 
+* mood, .mood, themood - returns the current mood of the room (set by admins)
+
+* theme, .theme, thetheme - returns the current theme of the room (set by admins)
+
 ### Room enforcement commands
 (these are all currently disabled, as the waitlist functionality is turned off for this particular instance of this bot)
 
@@ -224,6 +228,10 @@ These commands can only be performed by admins of the bot.
 * pulldj - Pulls a DJ off stage after their song.
 
 * pullcurrent - Pulls the current DJ off stage during their song.
+
+* setmood [mood] - sets the mood of the room
+
+* settheme [theme] - sets the theme of the room
 
 * meow, step up - The bot steps up to DJ.
 

@@ -29,6 +29,12 @@ var singalong;
 var uptime = new Date();
 var sockets = new Array();
 
+// mood & theme vars
+var noMood = "No mood right now - play whatever you'd like.";
+var noTheme = "No theme right now - play whatever you'd like.";
+var mood = noMood;
+var theme = noTheme;
+
 initializeModules();
 
 //Creates the bot and initializes global vars
@@ -745,6 +751,20 @@ function admincheck(userid) {
 	return false;
 }
 
+function getMood() {
+	if (mood == noMood)
+		bot.speak(mood);
+	else
+		bot.speak('Current mood: ' + mood);
+}
+
+function getTheme() {
+	if (theme == noTheme)
+		bot.speak(theme);
+	else
+		bot.speak('Current theme: ' + theme + '!');
+}
+
 //Add the currently playing song to the bot's queue
 function snagSong() {
 	bot.snag(function() {
@@ -797,18 +817,26 @@ function addToDb(data) {
 function welcomeUser(name, id) {
     //Ignore ttdashboard bots
     if (!name.match(/^ttdashboard/)) {
+    	var curMood = "";
+    	var curTheme = "";
+    	if (mood != noMood)
+    		curMood = "The current mood is: " + mood + " ";
+    	if (theme != noTheme)
+    		curTheme = "The current theme is: " + theme + "! ";
+                		
         if (config.database.usedb) {
             client.query('SELECT greeting FROM ' + config.database.dbname + '.'
                 + config.database.tablenames.holiday + ' WHERE date LIKE CURDATE()',
                 function cbfunc(error, results, fields) {
                     if (results[0] != null) {
-                        bot.speak(results[0]['greeting'] + ', ' + name + '!');
+                        bot.speak(results[0]['greeting'] + ', ' + name + '! ' + curMood + curTheme);
                     } else {
-                        bot.speak(config.responses.greeting + name + '!');
+                        bot.speak(config.responses.greeting + name + '! ' + curMood + curTheme);
                     }
             });
-        } else {
-            bot.speak(config.responses.greeting + name + '!');
+        } 
+        else {
+            bot.speak(config.responses.greeting + name + '! ' + curMood + curTheme);
         }
     }
 }
@@ -2155,6 +2183,38 @@ function handleCommand (name, userid, text, source) {
             process.exit(1);
         }
         break;
+        
+    // get the mood
+    case 'mood':
+    case 'mood?':
+    case '.mood':
+    case 'themood':
+    	getMood();
+		break;
+		
+    // get the theme
+    case 'theme':
+    case 'theme?':
+    case '.theme':
+	case 'thetheme':
+		getTheme();
+		break;
+    
+    //reset mood
+    case 'resetmood':
+    	if (admincheck(userid)) {
+    		mood = noMood;
+    		getMood();
+		}
+    	break;
+    	
+	//reset theme
+    case 'resettheme':
+    	if (admincheck(userid)) {
+    		theme = noTheme;
+    		getTheme();
+		}
+    	break;
     }
     
     //--------------------------------------
@@ -2207,6 +2267,22 @@ function handleCommand (name, userid, text, source) {
         }
     }
     
+    //set mood
+    if (text.match(/^setmood/i)) {
+    	if (admincheck(userid)) {
+	    	mood = text.substring(8);
+	    	getMood();
+		}
+    }
+    
+    //set theme
+    if (text.match(/^settheme/i)) {
+    	if (admincheck(userid)) {
+	    	theme = text.substring(9);
+	    	getTheme();
+		}
+    }
+     
     //Bot boot reference code
     if (text.toLowerCase().match(/^bootuser/)) {
         /**
