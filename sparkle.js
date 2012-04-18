@@ -1,8 +1,9 @@
 /**
  *  sparkle.js
- *  Author: sharedferret
+ *  Author: BeSublime
+ *  Original Code: sharedferret
  *  
- *  A Turntable.fm bot for the Indie/Classic Alternative 1 + Done room.
+ *  A Turntable.fm bot for the East Coast Indie room.
  *  Based on bot implementations by anamorphism and heatvision
  *  Uses node.js with node modules ttapi, mysql, request
  * 
