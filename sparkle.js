@@ -15,8 +15,8 @@
  *
 */
 
-var version = '[experimental] 2012.03.23';
-var botname = 'meow';
+var version = '[experimental] 2012.08.02';
+var botname = 'David Lee Bot';
 
 var fs = require('fs');
 var url = require('url');
@@ -173,6 +173,7 @@ bot.on('update_votes', function (data) {
 			bot.speak('Bonus!');
 			bonuspoints.push('xxMEOWxx');
 			bonusvote = true;
+            snagSong();
 		}
 	}
 
@@ -552,7 +553,7 @@ bot.on('pmmed', function(data) {
                     }
             });
         } else {
-            output({text: 'Please drop by our room first! http://http://turntable.fm/indieclassic_alternative_1_done',
+            output({text: 'Please drop by our room first! http://turntable.fm/better_off_80s',
                 destination: 'pm', userid: data.senderid});
         }
     } catch (e) {
@@ -986,11 +987,11 @@ function checkStepup(userid, name) {
 
 function checkWaitlist(userid, name) {
     //If they're not first, remove/warn
-    if (waitlist[0].name == name) {
-        waitlist.shift();
-        return true;
-    }
     if (waitlist.length > 0) {
+        if (waitlist[0].name == name) {
+            waitlist.shift();
+            return true;
+        }
         bot.remDj(userid);
         bot.speak(name + ', you\'re not next on the waitlist. Please let '
             + waitlist[0].name + ' up.');
@@ -2132,7 +2133,7 @@ function handleCommand (name, userid, text, source) {
         }
         break;
         
-    //Tells bot to lame the current song
+    //Tells bot to snag the current song
     case '\.q':
         if (admincheck(userid)) {
             snagSong();
