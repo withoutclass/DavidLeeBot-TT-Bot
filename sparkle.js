@@ -1688,6 +1688,9 @@ function handleCommand (name, userid, text, source) {
         if (config.enforcement.waitlist) {
             var response = 'Queue: ';
             var j = 0;
+            if (waitlist.length == 0) {
+                response += 'Empty';
+            }
             for (i in waitlist) {
                 j++;
                 response += ('[' + j + '] ' + waitlist[i].name + ', ');
