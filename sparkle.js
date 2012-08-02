@@ -1689,7 +1689,7 @@ function handleCommand (name, userid, text, source) {
             var response = 'Queue: ';
             var j = 0;
             if (waitlist.length == 0) {
-                response += 'Empty';
+                response += 'Empty  ';
             }
             for (i in waitlist) {
                 j++;
