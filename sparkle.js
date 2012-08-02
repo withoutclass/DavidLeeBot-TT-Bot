@@ -1,9 +1,9 @@
 /**
  *  sparkle.js
- *  Author: BeSublime
+ *  Author: DJ Ronnie B
  *  Original Code: sharedferret
  *  
- *  A Turntable.fm bot for the East Coast Indie room.
+ *  A Turntable.fm bot for the Better Off 80's room.
  *  Based on bot implementations by anamorphism and heatvision
  *  Uses node.js with node modules ttapi, mysql, request
  * 
@@ -173,7 +173,7 @@ bot.on('update_votes', function (data) {
 			bot.speak('Bonus!');
 			bonuspoints.push('xxMEOWxx');
 			bonusvote = true;
-            snagSong();
+            bot.snag();
 		}
 	}
 
@@ -245,18 +245,18 @@ bot.on('registered',   function (data) {
                         var curtime = results[0]['now'];
                         //Send a welcome PM if user hasn't joined in 36+ hours
                         if ((new Date().getTime() - time.getTime()) > 129600000) {
-                            output({text: 'Welcome to East Coast Indie! No queue, fastest finger, be friendly! '
+                            output({text: 'Welcome to Better Off 80\'s! Type +q to add youself to the queue. '
                             + 'Type \'commands\' to see a list of commands I can respond to.',
                             destination: 'pm', userid: user.userid});
                         }
                     } else {
-                        output({text: 'Welcome to East Coast Indie! No queue, fastest finger, be friendly! '
+                        output({text: 'Welcome to Better Off 80\'s! Type +q to add youself to the queue. '
                             + 'Type \'commands\' to see a list of commands I can respond to.',
                             destination: 'pm', userid: user.userid});
                     }
             });
         } else {
-            output({text: 'Welcome to East Coast Indie! No queue, fastest finger, be friendly! '
+            output({text: 'Welcome to Better Off 80\'s! Type +q to add youself to the queue. '
                 + 'Type \'commands\' to see a list of commands I can respond to.',
                 destination: 'pm', userid: user.userid});
         }
@@ -747,7 +747,7 @@ function admincheck(userid) {
 		}
 	}
     
-    if (userid == config.admin.mainadmin) {
+    if (userid == config.admins.mainadmin) {
         return true;
     }
 	return false;
