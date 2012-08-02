@@ -466,7 +466,7 @@ bot.on('rem_dj', function (data) {
     }
     
     if ((config.enforcement.waitlist) && (waitlist.length > 0) && legalstepdown) {
-        bot.speak('The next spot is for @' + waitlist[0].name + '!');
+        bot.speak('The open spot is for @' + waitlist[0].name + '!');
         output({text: 'Hey! This spot is yours, so go ahead and step up!', destination: 'pm',
             userid: waitlist[0].id});
     }
@@ -864,8 +864,10 @@ function reducePastDJCounts(djid) {
         if (djs[i].id == djid) {
             djs[i].remaining--;
             if (djs[i].remaining <= 0) {
-                userstepped = false;
-                usertostep = djid;
+                if (waitlist.length > 0) {
+                    userstepped = false;
+                    usertostep = djid;
+                }
             }
         }
     }
