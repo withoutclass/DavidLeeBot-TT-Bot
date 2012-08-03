@@ -15,8 +15,8 @@
  *
 */
 
-var version = '[experimental] 2012.08.02';
-var botname = 'David Lee Bot';
+var version = '[experimental] 2012.08.03';
+var botname = 'dlb';
 
 var fs = require('fs');
 var url = require('url');
@@ -379,7 +379,11 @@ bot.on('newsong', function (data) {
 	populateSongData(data);
 
 	//Skrillex is awful
-	if ((currentsong.artist.indexOf('Skrillex') != -1) || (currentsong.song.indexOf('Skrillex') != -1)) {
+	//Nickelback is the devil's spawn
+	if ((currentsong.artist.indexOf('Skrillex') != -1)
+	    || (currentsong.artist.indexOf('Nickelback') != -1)
+	    || (currentsong.song.indexOf('Skrillex') != -1)
+	    || (currentsong.song.indexOf('Nickelback') != -1)) {
 		bot.remDj(currentsong.djid);
 		bot.speak('NO.');
 	}
@@ -830,7 +834,7 @@ function welcomeUser(name, id) {
             client.query('SELECT greeting FROM ' + config.database.dbname + '.'
                 + config.database.tablenames.holiday + ' WHERE date LIKE CURDATE()',
                 function cbfunc(error, results, fields) {
-                    if (results[0] != null) {
+                    if (results != null && results[0] != null) {
                         bot.speak(results[0]['greeting'] + ', ' + name + '! ' + curMood + curTheme);
                     } else {
                         bot.speak(config.responses.greeting + name + '! ' + curMood + curTheme);
@@ -2097,7 +2101,7 @@ function handleCommand (name, userid, text, source) {
         if (config.database.usedb) {
             client.query('SELECT * FROM CATFACTS ORDER BY RAND() LIMIT 1',
                 function selectCb(error, results, fields) {
-                    if (results[0] != null) {
+                    if (results != null && results[0] != null) {
                         var response = (results[0]['fact']);
                         output({text: response, destination: source, userid: userid});
                     }
@@ -2112,7 +2116,7 @@ function handleCommand (name, userid, text, source) {
      if (config.database.usedb) {
             client.query('SELECT * FROM SCOTT_PILGRIM ORDER BY RAND() LIMIT 1',
                 function selectCb(error, results, fields) {
-                    if (results[0] != null) {
+                    if (results != null && results[0] != null) {
                         var response = (results[0]['quote']);
                         output({text: response, destination: source, userid: userid});
                     }
@@ -2164,7 +2168,7 @@ function handleCommand (name, userid, text, source) {
         break;
 
     //Bot freakout
-    case 'oh my god meow':
+    case 'oh my god dlb':
         if (admincheck(userid)) {
             output({text: reptarCall(), destination: source, userid: userid});
             setTimeout(function() {
@@ -2183,7 +2187,7 @@ function handleCommand (name, userid, text, source) {
         break;
     
     //Restarts bot (if keepalive script is used)
-    case 'meow, restart':
+    case 'dlb, restart':
         if (userid == config.admins.mainadmin) {
             bot.speak('Back in 10 seconds! Rebooting...');
             bot.roomDeregister();
@@ -2269,7 +2273,7 @@ function handleCommand (name, userid, text, source) {
     }
     
     if (text.toLowerCase().match(/^setavatar/)) {
-        if (admincheck(userid)) {
+        if (userid == config.admins.mainadmin) {
             bot.setAvatar(text.substring(10));
         }
     }
