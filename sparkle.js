@@ -822,7 +822,7 @@ function addToDb(data) {
 
 function welcomeUser(name, id) {
     //Ignore ttdashboard bots
-    if (!name.match(/^ttdashboard/)) {
+    if (!name.match(/^ttstats/)) {
     	var curMood = "";
     	var curTheme = "";
     	if (mood != noMood)
@@ -2130,7 +2130,8 @@ function handleCommand (name, userid, text, source) {
     
     //Tells bot to awesome the current song
     case '\.a':
-        if (admincheck(userid)) {
+        // Only awesome if admin, and not the current dj
+        if (admincheck(userid) && currentsong.djid != null && currentsong.djid != userid) {
             bot.vote('up');
         }
         break;
