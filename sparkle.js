@@ -2131,8 +2131,14 @@ function handleCommand (name, userid, text, source) {
     //Tells bot to awesome the current song
     case '\.a':
         // Only awesome if admin, and not the current dj
-        if (admincheck(userid) && currentsong.djid != null && currentsong.djid != userid) {
-            bot.vote('up');
+        if (admincheck(userid)) {
+            if (currentsong.djid == userid) {
+                output({text: "You can't awesome yourself!", destination: source,
+                    userid: userid});
+            }
+            else {
+                bot.vote('up');
+            }
         }
         break;
         
