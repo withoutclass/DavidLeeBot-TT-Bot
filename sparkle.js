@@ -1292,7 +1292,7 @@ function handleCommand (name, userid, text, source) {
         case 'commands':
         
         var response = 'Commands: ping, rules, platforms, .owner, .source, /roll, '
-            + 'version, hugs meow, .hodor, uptime, ';
+            + 'version, hugs ' + botname + ', .hodor, uptime, ';
         
         if (config.lastfm.useapi) {
             response += '.similar, .similarartists, ';
@@ -1402,7 +1402,7 @@ function handleCommand (name, userid, text, source) {
         output({text: response, destination: source, userid: userid});
         break;
     
-    //Outputs github url for xxMEOWxx
+    //Outputs github url for bot
 		case '.source':
         var response = ('My source code is available at: http://git.io/bsbot');
         output({text: response, destination: source, userid: userid});
@@ -2191,7 +2191,7 @@ function handleCommand (name, userid, text, source) {
     }
     
     //Hug bot
-    if (text.toLowerCase() == ('hugs ' + botname) || text.toLowerCase() == 'hugs meow') {
+    if (text.toLowerCase() == ('hugs ' + botname)) {
         var rand = Math.random();
         var timetowait = 1600;
         if (rand < 0.4) {
