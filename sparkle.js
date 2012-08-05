@@ -778,31 +778,6 @@ function snagSong() {
 	});
 }
 
-//The bot will respond to a Reptar call with a variant of 'rawr!' based on
-//the result from a RNG.
-function reptarCall(source) {
-	var rand = Math.random();
-    var response = '';
-	if (rand < 0.05) {
-		response = ('That band is pretty awesome.');
-	} else if (rand < 0.10) {
-		response = ('Good morning!');
-	} else if (rand < 0.17) {
-		response = ('Rawr!');
-	} else if (rand < 0.3) {
-		response = ('rawr!');
-	} else if (rand < 0.4) {
-		response = ('RAWR!');
-	} else if (rand < 0.5) {
-		response = ('rawr.');
-	} else if (rand < 0.6) {
-		response = ('RAWR!!!');
-	} else {
-		response = ('.reptar');
-	}
-    return response;
-}
-
 //Adds the song data to the songdata table.
 //This runs on the endsong event.
 function addToDb(data) {
@@ -1316,12 +1291,7 @@ function handleCommand (name, userid, text, source) {
     
         case 'commands':
         
-        var response = 'commands: .owner, .source, mystats, bonus, points, rules, ping, '
-            + 'platforms, reptar, mostplayed, mostawesomed, mostlamed, mymostplayed, '
-            + 'mymostawesomed, mymostlamed, totalawesomes, mostsnagged, '
-            + 'pastnames [username], .similar, .similarartists, ';
-        
-        var response = 'Commands: ping, reptar, rules, platforms, .owner, .source, /roll, '
+        var response = 'Commands: ping, rules, platforms, .owner, .source, /roll, '
             + 'version, hugs meow, .hodor, uptime, ';
         
         if (config.lastfm.useapi) {
@@ -1451,39 +1421,23 @@ function handleCommand (name, userid, text, source) {
         output({text: response, destination: source, userid: userid});
         break;
         
-    //Reptar call!
-    //Randomly picks a response in reptarCall()
-    case 'reptar':
-        var response = reptarCall();
-        output({text: response, destination: source, userid: userid});
-        break;
-    
     case 'version':
         var response = (version);
         output({text: response, destination: source, userid: userid});
         break;
         
-    //Bot freakout
-    case 'reptar sucks':
-        var response = ('OH NO YOU DIDN\'T');
-        output({text: response, destination: source, userid: userid});
-        setTimeout(function() {
-            output({text: reptarCall(), destination: source, userid: userid});
-        }, 1000);
-        break;
-        
     //Rules rehash since xxRAWRxx only responds to .rules
     //TODO: Generate rules based on bot options
-		case 'rules':
-			if (config.responses.rules.link != null && config.responses.rules.link!= "") {
-				var response = ('You can view the rules here: ' + config.responses.rules.link);
-	            output({text: response, destination: source, userid: userid});
-	        }
-			setTimeout(function() {
-				var response = (config.responses.rules.description);
-                output({text: response, destination: source, userid: userid});
-			}, 600);
-			break;
+    case 'rules':
+        if (config.responses.rules.link != null && config.responses.rules.link!= "") {
+            var response = ('You can view the rules here: ' + config.responses.rules.link);
+            output({text: response, destination: source, userid: userid});
+        }
+		setTimeout(function() {
+            var response = (config.responses.rules.description);
+            output({text: response, destination: source, userid: userid});
+        }, 600);
+        break;
         
     //Returns the number of each type of laptop present in the room
     case 'platforms':
@@ -1540,14 +1494,6 @@ function handleCommand (name, userid, text, source) {
         output({text: 'Always.', destination: source, userid: userid});
         break;
         
-    //Responds to reptar-related call
-    case 'can you feel it!?':
-        setTimeout(function() {
-            var response = ('YES I CAN FEEL IT!');
-            output({text: response, destination: source, userid: userid});
-        }, 1200);
-        break;
-    
     //ICA inside joke
     case 'i enjoy that band.':
         setTimeout(function() {
@@ -2174,25 +2120,6 @@ function handleCommand (name, userid, text, source) {
         }
         break;
 
-    //Bot freakout
-    case 'oh my god dlb':
-        if (admincheck(userid)) {
-            output({text: reptarCall(), destination: source, userid: userid});
-            setTimeout(function() {
-                output({text: reptarCall(), destination: source, userid: userid});
-            }, 1400);
-            setTimeout(function() {
-                output({text: reptarCall(), destination: source, userid: userid});
-            }, 2800);
-            setTimeout(function() {
-                output({text: reptarCall(), destination: source, userid: userid});
-            }, 4200);
-            setTimeout(function() {
-                output({text: reptarCall(), destination: source, userid: userid});
-            }, 5600);
-        }
-        break;
-    
     //Restarts bot (if keepalive script is used)
     case 'dlb, restart':
         if (userid == config.admins.mainadmin) {
