@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.03';
+var version = '[experimental] 2012.08.06a';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -1542,7 +1542,8 @@ function handleCommand (name, userid, text, source) {
         if (config.enforcement.enforceroom) {
             var response = '';
             for (i in djs) {
-                response += usersList[djs[i].id].name + ' (' + djs[i].remaining + ' song(s) left), ';
+                response += usersList[djs[i].id].name + ' (' + djs[i].remaining + ' song'
+                    + ((djs[i].remaining > 1 || djs[i].remaining < -1) ? 's' : '') + ' left), ';
             }
             output({text: response.substring(0, response.length - 2), destination: source, userid: userid});
         } else {
