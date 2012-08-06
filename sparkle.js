@@ -1611,6 +1611,7 @@ function handleCommand (name, userid, text, source) {
     case 'shiftqueue':
     case '.shiftq':
     case 'shiftq':
+    case '!drop'
         if (config.enforcement.waitlist && admincheck(userid)) {
             var removed = waitlist.shift();
             if (removed != null) {
@@ -2076,6 +2077,7 @@ function handleCommand (name, userid, text, source) {
     
     //Tells bot to awesome the current song
     case '\.a':
+    case '!bop':
         // Only awesome if admin, and not the current dj
         if (admincheck(userid)) {
             if (currentsong.djid == userid) {
@@ -2090,6 +2092,7 @@ function handleCommand (name, userid, text, source) {
         
     //Tells bot to lame the current song
     case '\.l':
+    case '!lame':
         if (admincheck(userid)) {
             bot.vote('down');
         }
@@ -2097,6 +2100,7 @@ function handleCommand (name, userid, text, source) {
         
     //Tells bot to snag the current song
     case '\.q':
+    case '!snag':
         if (admincheck(userid)) {
             snagSong();
         }
@@ -2104,6 +2108,7 @@ function handleCommand (name, userid, text, source) {
 
     //Pulls a DJ after their song.
     case 'pulldj':
+    case '!pulldj':
         if (admincheck(userid)) {
             if (!userstepped) {
                 bot.remDj(usertostep);
@@ -2113,6 +2118,7 @@ function handleCommand (name, userid, text, source) {
 
     //Pulls the current dj.
     case 'pullcurrent':
+    case '!pullcurrent':
         if (admincheck(userid)) {
             if(currentsong.djid != null) {
                 bot.remDj(currentsong.djid);
@@ -2147,6 +2153,7 @@ function handleCommand (name, userid, text, source) {
     
     //reset mood
     case 'resetmood':
+    case '!resetmood':
     	if (admincheck(userid)) {
     		mood = noMood;
     		getMood();
@@ -2155,40 +2162,50 @@ function handleCommand (name, userid, text, source) {
     	
 	//reset theme
     case 'resettheme':
+    case '!resettheme':
     	if (admincheck(userid)) {
     		theme = noTheme;
     		getTheme();
 		}
     	break;
-    }
-    
-    //--------------------------------------
-    // Matching commands (regex)
-    //--------------------------------------
-    
+
+    //Have the bot step up to DJ
+    case '!up':
+        if (admincheck(userid)) {
+            bot.addDj();
+        }
+        break;
+
+    //Have the bot jump off the decks
+    case '!down':
+        if (admincheck(userid)) {
+            bot.remDj(config.botinfo.userid);
+        }
+        break;
+
     //Shuts down bot (only the main admin can run this)
     //Disconnects from room, exits process.
-    if (text.toLowerCase() == (botname + ', shut down')) {
+    case '#shutdown':
         if (userid == config.admins.mainadmin) {
             bot.speak('Shutting down...');
             bot.roomDeregister();
             process.exit(0);
         }
+        break;
+
+    //Sends a PM to the user
+    case '/pm':
+        if (source == 'speak') {
+            bot.pm('Hey there! Type "commands" for a list of commands.', userid);
+        } else if (source == 'pm') {
+            bot.pm('But... you PM\'d me that. Do you think I\'m stupid? >:T', userid);
+        }
+        break;
     }
     
-    //Have the bot step up to DJ
-    if (text.toLowerCase() == (botname + ', step up')) {
-        if (admincheck(userid)) {
-            bot.addDj();
-        }
-    }
-    
-    //Have the bot jump off the decks
-    if (text.toLowerCase() == (botname + ', step down')) {
-        if (admincheck(userid)) {
-            bot.remDj(config.botinfo.userid);
-        }
-    }
+    //--------------------------------------
+    // Matching commands (regex)
+    //--------------------------------------
     
     //Hug bot
     if (text.toLowerCase() == ('hugs ' + botname)) {
@@ -2206,34 +2223,34 @@ function handleCommand (name, userid, text, source) {
         }, timetowait);
     }
     
-    if (text.toLowerCase().match(/^setavatar/)) {
+    if (text.toLowerCase().match(/^#avatar/)) {
         if (userid == config.admins.mainadmin) {
-            bot.setAvatar(text.substring(10));
+            bot.setAvatar(text.substring(8));
         }
     }
     
     //set mood
-    if (text.match(/^setmood/i)) {
+    if (text.match(/^!mood/i)) {
     	if (admincheck(userid)) {
-	    	mood = text.substring(8);
+	    	mood = text.substring(6);
 	    	getMood();
 		}
     }
     
     //set theme
-    if (text.match(/^settheme/i)) {
+    if (text.match(/^!theme/i)) {
     	if (admincheck(userid)) {
-	    	theme = text.substring(9);
+	    	theme = text.substring(7);
 	    	getTheme();
 		}
     }
      
     //Bot boot reference code
-    if (text.toLowerCase().match(/^bootuser/)) {
+    if (text.toLowerCase().match(/^!bootuser/)) {
         /**
         if (admincheck(userid)) {
             for (i in usersList) {
-                if (usersList[i].name.toLowerCase() == text.substring(9)) {
+                if (usersList[i].name.toLowerCase() == text.substring(10)) {
                     bot.boot(i, 'Test boot from another room');
                 }
                 
@@ -2247,16 +2264,8 @@ function handleCommand (name, userid, text, source) {
         output({text: response, destination: source, userid: userid});
     }
     
-    //Sends a PM to the user
-    if (text.toLowerCase() == (botname + ', pm me')) {
-        if (source == 'speak') {
-            bot.pm('Hey there! Type "commands" for a list of commands.', userid);
-        } else if (source == 'pm') {
-            bot.pm('But... you PM\'d me that. Do you think I\'m stupid? >:T', userid);
-        }
-    }
-    
-    if (text.toLowerCase().match(/^.fq/)) {
+    //Add a DJ to the front of the queue
+    if (text.toLowerCase().match(/^!fq/)) {
         if (admincheck(userid)) {
             for (i in usersList) {
                 if (usersList[i].name.toLowerCase() == text.substring(4)) {
@@ -2268,11 +2277,11 @@ function handleCommand (name, userid, text, source) {
         }
     }
     
-    if (text.toLowerCase().match(/^skipwait/)) {
+    if (text.toLowerCase().match(/^!skipwait/)) {
         if (admincheck(userid)) {
             for (i in usersList) {
                 //TODO: This doesn't work
-                if (usersList[i].name.toLowerCase() == text.substring(9))
+                if (usersList[i].name.toLowerCase() == text.substring(10))
                 {
                     for (j in pastdjs) {
                         if (pastdjs[j].id == i) {
