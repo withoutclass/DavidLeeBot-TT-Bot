@@ -339,7 +339,7 @@ bot.on('endsong', function (data) {
 
     //If a DJ that needed to step down hasn't by the end of the
     //next DJ's song, remove them immediately
-    if (config.enforcement.enforceroom && !userstepped) {
+    if (config.enforcement.enforceroom && !userstepped && usertostep != null) {
         bot.remDj(usertostep);
     }
     
@@ -1543,7 +1543,7 @@ function handleCommand (name, userid, text, source) {
             var response = '';
             for (i in djs) {
                 response += usersList[djs[i].id].name + ' (' + djs[i].remaining + ' song'
-                    + ((djs[i].remaining > 1 || djs[i].remaining < -1) ? 's' : '') + ' left), ';
+                    + ((djs[i].remaining == 1 || djs[i].remaining  == -1) ? '' : 's') + ' left), ';
             }
             output({text: response.substring(0, response.length - 2), destination: source, userid: userid});
         } else {
@@ -1612,7 +1612,7 @@ function handleCommand (name, userid, text, source) {
     case 'shiftqueue':
     case '.shiftq':
     case 'shiftq':
-    case '!drop'
+    case '!drop':
         if (config.enforcement.waitlist && admincheck(userid)) {
             var removed = waitlist.shift();
             if (removed != null) {
