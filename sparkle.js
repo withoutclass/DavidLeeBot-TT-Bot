@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.07b';
+var version = '[experimental] 2012.08.07c';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -29,6 +29,7 @@ var request;
 var singalong;
 var uptime = new Date();
 var sockets = new Array();
+var botIsDJ = false;
 
 // mood & theme vars
 var noMood = "No mood right now - play whatever you'd like.";
@@ -472,6 +473,15 @@ bot.on('rem_dj', function (data) {
             userid: waitlist[0].id});
     }
     legalstepdown = true;
+
+    if (djs.length == 1) {
+        if (botIsDJ) {
+            botStopDJ();
+        }
+        else {
+            botStartDJ();
+        }
+    }
 });
 
 //Runs when a dj steps up
@@ -496,6 +506,15 @@ bot.on('add_dj', function(data) {
     //See if this user is in the past djs list
     else if (config.enforcement.enforceroom && config.enforcement.stepuprules.waittostepup) {
         checkStepup(data.user[0].userid, data.user[0].name);
+    }
+
+    if (djs.length > 2 && botIsDJ) {
+        console.log('Bot should step down');
+        botStopDJ();
+    }
+    if (djs.length == 1 && !botIsDJ) {
+        console.log('Bot should step up')
+        botStartDJ();
     }
     
 });
@@ -1286,6 +1305,16 @@ bot.on('httpRequest', function(request, response) {
         }
     }
 });*/
+
+function botStartDJ() {
+    bot.addDj();
+    botIsDJ = true;
+}
+
+function botStopDJ() {
+    bot.remDj(config.botinfo.userid);
+    botIsDJ = false;
+}
 
 //Handles chat commands
 function handleCommand (name, userid, text, source) {
@@ -2177,14 +2206,14 @@ function handleCommand (name, userid, text, source) {
     //Have the bot step up to DJ
     case '!up':
         if (admincheck(userid)) {
-            bot.addDj();
+            botStartDJ();
         }
         break;
 
     //Have the bot jump off the decks
     case '!down':
         if (admincheck(userid)) {
-            bot.remDj(config.botinfo.userid);
+            botStopDJ();
         }
         break;
 
