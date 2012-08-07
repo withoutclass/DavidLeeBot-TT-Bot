@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.07a';
+var version = '[experimental] 2012.08.07b';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -170,11 +170,7 @@ bot.on('update_votes', function (data) {
     //is set to VOTE, give a bonus point
 	if ((config.bonusvote == 'VOTE') && !bonusvote && (currentsong.djid != config.botinfo.userid)) {
 		if (currentsong.up >= bonusvotepoints) {
-			bot.vote('up');
-			bot.speak('Bonus!');
-			bonuspoints.push('xxMEOWxx');
-			bonusvote = true;
-            bot.snag();
+            snagThisSong(2);
 		}
 	}
 
@@ -515,11 +511,7 @@ bot.on('snagged', function(data) {
 	
 	var target = getTarget();
 	if((bonuspoints.length >= target) && !bonusvote && (config.bonusvote == 'CHAT') && (currentsong.djid != config.botinfo.userid)) {
-		bot.speak('Bonus!');
-		bot.vote('up');
-		bot.snag();
-        bot.playlistAdd(currentsong.songid)
-		bonusvote = true;
+        snagThisSong(1);
 	}	
 });
 
@@ -1055,6 +1047,17 @@ function canUserStep(name, userid) {
     return (name + ', go ahead!');
 }
 
+function snagThisSong(snagType) {
+    bot.vote('up');
+    bot.speak('Bonus!');
+    if (snagType == 2) {
+        bonuspoints.push('xxMEOWxx');
+    }
+    bonusvote = true;
+    bot.playlistAdd(currentsong.songid)
+    bot.snag();
+}
+
 //Welcome message for TCP connection
 bot.on('tcpConnect', function (socket) {
 	socket.write('>> Welcome! Type a command or \'help\' to see a list of commands\n');
@@ -1349,9 +1352,7 @@ function handleCommand (name, userid, text, source) {
             var target = getTarget();
             //If the target has been met, the bot will awesome
             if((bonuspoints.length >= target) && !bonusvote && (currentsong.djid != config.botinfo.userid)) {
-                bot.speak('Bonus!');
-                bot.vote('up');
-                bonusvote = true;
+                snagThisSong(1);
             }
         }
         break;
