@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.06a';
+var version = '[experimental] 2012.08.07a';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -78,7 +78,8 @@ var currentsong = {
 	up: 0,
 	down: 0,
 	listeners: 0,
-	snags: 0};
+	snags: 0,
+    songid: 0};
     
 
 //When the bot is ready, this makes it join the primary room (ROOMID)
@@ -517,6 +518,7 @@ bot.on('snagged', function(data) {
 		bot.speak('Bonus!');
 		bot.vote('up');
 		bot.snag();
+        bot.playlistAdd(currentsong.songid)
 		bonusvote = true;
 	}	
 });
@@ -725,6 +727,7 @@ function populateSongData(data) {
 	currentsong.listeners = data.room.metadata.listeners;
 	currentsong.started = data.room.metadata.current_song.starttime;
 	currentsong.snags = 0;
+    currentsong.songid = data.room.metadata.current_song._id;
 }
 
 function output(data) {
