@@ -365,8 +365,8 @@ bot.on('endsong', function (data) {
 			+ currentsong.up + awesomes + currentsong.down
 			+ lames + currentsong.snags + snags);
 	}
-    
-    
+
+
 });
 
 //Runs when a new song is played
@@ -856,11 +856,11 @@ function reducePastDJCounts(djid) {
     for (i in djs) {
         if (djs[i].id == djid) {
             djs[i].remaining--;
-            if (djs[i].remaining <= 0) {
-                if (waitlist.length > 0) {
-                    userstepped = false;
-                    usertostep = djid;
-                }
+        }
+        if (djs[i].remaining <= 0) {
+            if (waitlist.length > 0 && usertostep == null) {
+                userstepped = false;
+                usertostep = djid;
             }
         }
     }
