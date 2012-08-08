@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.07c';
+var version = '[experimental] 2012.08.07d';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -1073,7 +1073,10 @@ function snagThisSong(snagType) {
         bonuspoints.push('xxMEOWxx');
     }
     bonusvote = true;
-    bot.playlistAdd(currentsong.songid)
+    // Add new song near end of playlist
+    bot.playlistAll(function (data) {
+        bot.playlistAdd(currentsong.id, (data.list.length - 1));
+    }); 
     bot.snag();
 }
 
@@ -2162,6 +2165,7 @@ function handleCommand (name, userid, text, source) {
 
     //Restarts bot (if keepalive script is used)
     case 'dlb, restart':
+    case '#restart':
         if (userid == config.admins.mainadmin) {
             bot.speak('Back in 10 seconds! Rebooting...');
             bot.roomDeregister();
@@ -2303,7 +2307,7 @@ function handleCommand (name, userid, text, source) {
         if (admincheck(userid)) {
             for (i in usersList) {
                 if (usersList[i].name.toLowerCase() == text.substring(4)) {
-                    waitlist.unshift(usersList[i].name);
+                    waitlist.unshift({name: usersList[i].name, id: i});
                     output({text: usersList[i].name + ' has been added to the start of the queue.',
                         destination: source, userid: userid});
                 }
