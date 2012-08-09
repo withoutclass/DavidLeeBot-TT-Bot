@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.07d';
+var version = '[experimental] 2012.08.09a';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -130,8 +130,8 @@ bot.on('roomChanged', function(data) {
 	var users = data.users;
 	for (i in users) {
 		var user = users[i];
-        user.lastActivity = new Date();
 		usersList[user.userid] = user;
+        justActive(user.userid);
 	}
     
     //Adds all active users to the users table - updates lastseen if we've seen
@@ -182,7 +182,7 @@ bot.on('update_votes', function (data) {
 	if (config.consolelog) {
 		if (data.room.metadata.votelog[0][1] == 'up') {
 			var voteduser = usersList[data.room.metadata.votelog[0][0]];
-                voteduser.lastActivity = new Date();
+                justActive(data.room.metadata.votelog[0][0]);
 				console.log('Vote: [+'
 				+ data.room.metadata.upvotes + ' -'
 				+ data.room.metadata.downvotes + '] ['
@@ -207,8 +207,8 @@ bot.on('registered',   function (data) {
 	
 	//Add user to usersList
 	var user = data.user[0];
-    user.lastActivity = new Date();
 	usersList[user.userid] = user;
+    justActive(user.userid);
     if (currentsong != null) {
         currentsong.listeners++;
     }
@@ -304,7 +304,7 @@ bot.on('deregistered', function (data) {
 //Commands are added under switch(text)
 bot.on('speak', function (data) {
     // Update user's last activity
-    usersList[data.userid].lastActivity = new Date();
+    justActive(data.userid);
 
 	//Log in console
 	if (config.consolelog) {
@@ -445,7 +445,7 @@ bot.on('rem_dj', function (data) {
 	}
     
     // Register activity for this user
-    userslist[data.user[0].userid].lastActivity = new Date();
+    justActive(data.user[0].userid);
 
 	//Adds user to 'step down' vars
 	//Used by enforceRoom()
@@ -497,7 +497,7 @@ bot.on('rem_dj', function (data) {
 //Logs in console
 bot.on('add_dj', function(data) {
     //Register activity for that user
-    usersList[data.user[0].userid].lastActivity = new Date();
+    justActive(data.user[0].userid);
 
 	//Log in console
 	if (config.consolelog) {
@@ -535,7 +535,7 @@ bot.on('snagged', function(data) {
 	currentsong.snags++;
     
     // Register activity for this user
-    usersList[data.userid].lastActivity = new Date();
+    justActive(data.userid);
 	
     //If bonus is chat-based, increase bonus points count
 	if (config.bonusvote == 'CHAT') {
@@ -825,7 +825,7 @@ function addToDb(data) {
 
 function welcomeUser(name, id) {
     //Ignore ttdashboard bots
-    if (!name.match(/^ttstats/)) {
+    if (!name.match(/^@ttstats/)) {
     	var curMood = "";
     	var curTheme = "";
     	if (mood != noMood)
@@ -847,6 +847,9 @@ function welcomeUser(name, id) {
         else {
             bot.speak(config.responses.greeting + name + '! ' + curMood + curTheme);
         }
+    }
+    else {
+        bot.speak('Uh oh... a bot!!');
     }
 }
 
@@ -1331,6 +1334,10 @@ function botStartDJ() {
 function botStopDJ() {
     bot.remDj(config.botinfo.userid);
     botIsDJ = false;
+}
+
+function justActive(userid) {
+    usersList[userid].lastActivity = new Date();
 }
 
 //Handles chat commands
