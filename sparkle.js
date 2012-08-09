@@ -130,6 +130,7 @@ bot.on('roomChanged', function(data) {
 	var users = data.users;
 	for (i in users) {
 		var user = users[i];
+        user.lastActivity = new Date();
 		usersList[user.userid] = user;
 	}
     
@@ -181,6 +182,7 @@ bot.on('update_votes', function (data) {
 	if (config.consolelog) {
 		if (data.room.metadata.votelog[0][1] == 'up') {
 			var voteduser = usersList[data.room.metadata.votelog[0][0]];
+                voteduser.lastActivity = new Date();
 				console.log('Vote: [+'
 				+ data.room.metadata.upvotes + ' -'
 				+ data.room.metadata.downvotes + '] ['
@@ -205,6 +207,7 @@ bot.on('registered',   function (data) {
 	
 	//Add user to usersList
 	var user = data.user[0];
+    user.lastActivity = new Date();
 	usersList[user.userid] = user;
     if (currentsong != null) {
         currentsong.listeners++;
@@ -300,6 +303,9 @@ bot.on('deregistered', function (data) {
 //Responds based on coded commands, logs in console, adds chat entry to chatlog table
 //Commands are added under switch(text)
 bot.on('speak', function (data) {
+    // Update user's last activity
+    usersList[data.userid].lastActivity = new Date();
+
 	//Log in console
 	if (config.consolelog) {
 		console.log('Chat [' + data.userid + ' ' + data.name +'] ' + data.text);
@@ -437,6 +443,9 @@ bot.on('rem_dj', function (data) {
 	if (config.consolelog) {
 		console.log('Stepped down: '+ data.user[0].name + ' [' + data.user[0].userid + ']');
 	}
+    
+    // Register activity for this user
+    userslist[data.user[0].userid].lastActivity = new Date();
 
 	//Adds user to 'step down' vars
 	//Used by enforceRoom()
@@ -487,7 +496,9 @@ bot.on('rem_dj', function (data) {
 //Runs when a dj steps up
 //Logs in console
 bot.on('add_dj', function(data) {
-    
+    //Register activity for that user
+    usersList[data.user[0].userid].lastActivity = new Date();
+
 	//Log in console
 	if (config.consolelog) {
 		console.log('Stepped up: ' + data.user[0].name);
@@ -522,6 +533,9 @@ bot.on('add_dj', function(data) {
 bot.on('snagged', function(data) {
     //Increase song snag count
 	currentsong.snags++;
+    
+    // Register activity for this user
+    usersList[data.userid].lastActivity = new Date();
 	
     //If bonus is chat-based, increase bonus points count
 	if (config.bonusvote == 'CHAT') {
