@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.09a';
+var version = '[experimental] 2012.08.09b';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -108,11 +108,7 @@ bot.on('roomChanged', function(data) {
 
         //Creates the dj list
         for (i in data.room.metadata.djs) {
-            if (config.enforcement.enforceroom) {
-                djs.push({id: data.room.metadata.djs[i], remaining: config.enforcement.songstoplay});
-            } else {
-                djs.push({id: data.room.metadata.djs[i], remaining: 0});
-            }
+            addDJtoList(data.room.metadata.djs[i]);
         }
     }
 	
@@ -505,11 +501,7 @@ bot.on('add_dj', function(data) {
 	}
     
     //Add to DJ list
-    if (config.enforcement.enforceroom) {
-        djs.push({id: data.user[0].userid, remaining: config.enforcement.songstoplay});
-    } else {
-        djs.push({id: data.user[0].userid, remaining: 0});
-    }
+    addDJtoList(data.user[0].userid);
     
     if (config.enforcement.waitlist) {
         checkWaitlist(data.user[0].userid, data.user[0].name);
@@ -616,6 +608,25 @@ bot.on('rem_moderator', function(data) {
 });
 
 // Functions
+
+function addDJtoList(djid) {
+    if (config.enforcement.enforceroom) {
+        djs.push({id: djid, remaining: config.enforcement.songstoplay, warning: false});
+    }
+    else {
+        djs.push({id: djid, remaining: 0, warning: false});
+    }
+}
+
+function isAFK(userID, num) {
+    var last   = usersList[userId].lastActivity;
+    var age_ms = Date.now() - last;
+    var age_m  = Math.floor(age_ms / 1000 / 60);
+    if (age_m >= num) {
+        return true;
+    }
+    return false;
+}
 
 function initializeModules() {
     //Creates the bot listener
@@ -1694,6 +1705,7 @@ function handleCommand (name, userid, text, source) {
         
     case '.pq':
     case 'printqueue':
+    case '!list':
         if (config.enforcement.waitlist) {
             var response = 'Queue: ';
             var j = 0;
@@ -2249,6 +2261,16 @@ function handleCommand (name, userid, text, source) {
             bot.speak('Shutting down...');
             bot.roomDeregister();
             process.exit(0);
+        }
+        break;
+
+    case '#test':
+        if (userid == config.admins.mainadmin) {
+            var response = '';
+            for (i in djs) {
+                response += usersList[djs[i].id].name + ' AFK=' + isAFK(djs[i].id,2) + ', ';
+            }
+            output({text: response.substring(0, response.length - 2), destination: source, userid: userid});
         }
         break;
 
