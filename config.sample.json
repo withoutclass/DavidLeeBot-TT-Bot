@@ -43,6 +43,10 @@
 	{"enforceroom":false,
     "waitlist":false,
 	"songstoplay":2,
+	"idling":
+		{"removeidle":true,
+		"idlewarn":10,
+		"idledown":15},
 	"stepuprules":
 		{"waittostepup":true,
 		"waittype":"SONGS",

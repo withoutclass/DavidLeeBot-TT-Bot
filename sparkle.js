@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.10a';
+var version = '[experimental] 2012.08.10b';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -609,8 +609,8 @@ bot.on('rem_moderator', function(data) {
 
 // Functions
 function afkCheck() {
-    var afkLimitWarn = 10;
-    var afkLimitDown = 15;
+    var afkLimitWarn = config.enforcement.idling.idlewarn;
+    var afkLimitDown = config.enforcement.idling.idledown;
     
     for (i = 0; i < djs.length; i++) {
         dj = djs[i];
@@ -630,7 +630,8 @@ function afkCheck() {
         }
     }
 }
-setInterval(afkCheck, 60000);
+if (config.enforcement.idle.removeidle)
+    setInterval(afkCheck, 60000);
 
 function addDJtoList(djid) {
     if (config.enforcement.enforceroom) {
