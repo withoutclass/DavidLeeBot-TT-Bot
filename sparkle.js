@@ -608,6 +608,29 @@ bot.on('rem_moderator', function(data) {
 });
 
 // Functions
+function afkCheck() {
+    var afkLimitWarn = 10;
+    var afkLimitDown = 15;
+    
+    for (i = 0; i < djs.length; i++) {
+        dj = djs[i];
+        if (dj.id != config.botinfo.userid) {
+            if (usersList[dj.id].warned) {
+                if (isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
+                    bot.speak('@' + dj.name + ' was idle too long.');
+                    bot.remDj(dj); // remove them
+                }
+            }
+            else {
+                if (isAFK(dj.id, afkLimitWarn) {
+                    bot.speak('@' + dj.name + ', wake up...!');
+                    usersList[dj.id].warned = true;
+                }
+            }
+        }
+    }
+}
+setInterval(afkCheck, 60000);
 
 function addDJtoList(djid) {
     if (config.enforcement.enforceroom) {
@@ -1349,6 +1372,7 @@ function botStopDJ() {
 
 function justActive(userid) {
     usersList[userid].lastActivity = new Date();
+    usersList[userid].warned = false;
 }
 
 //Handles chat commands
