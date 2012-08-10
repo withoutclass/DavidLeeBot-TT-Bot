@@ -617,13 +617,13 @@ function afkCheck() {
         if (dj.id != config.botinfo.userid) {
             if (usersList[dj.id].warned) {
                 if (isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
-                    bot.speak('@' + dj.name + ' was idle too long.');
-                    bot.remDj(dj); // remove them
+                    bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
+                    bot.remDj(dj.id); // remove them
                 }
             }
             else {
-                if (isAFK(dj.id, afkLimitWarn) {
-                    bot.speak('@' + dj.name + ', wake up...!');
+                if (isAFK(dj.id, afkLimitWarn)) {
+                    bot.speak('@' + usersList[dj.id].name + ', wake up...!');
                     usersList[dj.id].warned = true;
                 }
             }
@@ -2286,7 +2286,7 @@ function handleCommand (name, userid, text, source) {
     case '!idle':
         var response = '';
         for (i = 0; i < djs.length; i++) {
-            response += djs[i].name + ': ' + AFKTime(djs[i].id) + ', ';
+            response += usersList[djs[i].id].name + ': ' + AFKTime(djs[i].id) + ', ';
         }
         output({text: response.substring(0, response.length - 2), destination: source, userid: userid});
         break;
