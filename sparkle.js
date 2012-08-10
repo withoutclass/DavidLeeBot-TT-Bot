@@ -616,7 +616,7 @@ function afkCheck() {
         dj = djs[i];
         if (dj.id != config.botinfo.userid) {
             if (usersList[dj.id].warned) {
-                if (isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
+                if (currentsong.djid != dj.id && isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
                     bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
                     bot.remDj(dj.id); // remove them
                 }
