@@ -642,7 +642,7 @@ function addDJtoList(djid) {
 }
 
 function AFKTime(userID) {
-    var last   = usersList[userId].lastActivity;
+    var last   = usersList[userID].lastActivity;
     var age_ms = Date.now() - last;
     var age_m  = Math.floor(age_ms / 1000 / 60);
     return age_m;
