@@ -15,7 +15,7 @@
  *
 */
 
-var version = '[experimental] 2012.08.09b';
+var version = '[experimental] 2012.08.10a';
 var botname = 'dlb';
 
 var fs = require('fs');
@@ -641,11 +641,15 @@ function addDJtoList(djid) {
     }
 }
 
-function isAFK(userID, num) {
+function AFKTime(userID) {
     var last   = usersList[userId].lastActivity;
     var age_ms = Date.now() - last;
     var age_m  = Math.floor(age_ms / 1000 / 60);
-    if (age_m >= num) {
+    return age_m;
+}
+
+function isAFK(userID, num) {
+    if (AFKTime(userID) >= num) {
         return true;
     }
     return false;
@@ -2276,6 +2280,15 @@ function handleCommand (name, userid, text, source) {
         if (admincheck(userid)) {
             botStopDJ();
         }
+        break;
+    
+    // Show idle times
+    case '!idle':
+        var response = '';
+        for (i = 0; i < djs.length; i++) {
+            response += djs[i].name + ': ' + AFKTime(djs[i].id) + ', ';
+        }
+        output({text: response.substring(0, response.length - 2), destination: source, userid: userid});
         break;
 
     //Shuts down bot (only the main admin can run this)
