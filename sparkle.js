@@ -16,7 +16,7 @@
 */
 
 var version = '[experimental] 2012.08.10b';
-var botname = 'dlb';
+var botname = 'cbot';
 
 var fs = require('fs');
 var url = require('url');
@@ -44,12 +44,6 @@ var bot = new Bot(config.botinfo.auth, config.botinfo.userid);
 if (config.tcp.usetcp) {
 	bot.tcpListen(config.tcp.port, config.tcp.host);
 }
-
-//Create HTTP listeners
-/**
-if (true) {
-    bot.listen(6526, '10.212.102.249');
-}*/
 
 //Room information
 var usersList = { };                //A list of users in the room
@@ -186,6 +180,12 @@ bot.on('update_votes', function (data) {
 				+ voteduser.name + ': '
 				+ data.room.metadata.votelog[0][1]);
 		} else {
+            try {
+                bot.speak(usersList[data.room.metadata.votelog[0][0]].name + " LAMED THE SONG");
+            } catch (err) {
+                // don't do anything I don't care.
+            }
+
 			console.log('Vote: [+'
 				+ data.room.metadata.upvotes + ' -'
 				+ data.room.metadata.downvotes + ']');
@@ -242,19 +242,16 @@ bot.on('registered',   function (data) {
                         var curtime = results[0]['now'];
                         //Send a welcome PM if user hasn't joined in 36+ hours
                         if ((new Date().getTime() - time.getTime()) > 129600000) {
-                            output({text: 'Welcome to Better Off 80\'s! Type +q to add youself to the queue. '
-                            + 'Type \'commands\' to see a list of commands I can respond to.',
+                            output({text: config.responses.pmgreet,
                             destination: 'pm', userid: user.userid});
                         }
                     } else {
-                        output({text: 'Welcome to Better Off 80\'s! Type +q to add youself to the queue. '
-                            + 'Type \'commands\' to see a list of commands I can respond to.',
+                        output({text: config.responses.pmgreet,
                             destination: 'pm', userid: user.userid});
                     }
             });
         } else {
-            output({text: 'Welcome to Better Off 80\'s! Type +q to add youself to the queue. '
-                + 'Type \'commands\' to see a list of commands I can respond to.',
+            output({text: config.responses.pmgreet,
                 destination: 'pm', userid: user.userid});
         }
     }
@@ -265,6 +262,16 @@ bot.on('registered',   function (data) {
         + ' (userid, username, lastseen)'
             + 'VALUES (?, ?, NOW()) ON DUPLICATE KEY UPDATE lastseen = NOW()',
             [user.userid, user.name]);
+
+        //See if banned
+        client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\')'
+            + ' FROM BANNED_USERS WHERE userid LIKE \'' + user.userid + '\'',
+        function cb (error, results, fields) {
+            if (results != null && results.length > 0) {
+                bot.boot(user.userid, 'You were banned from this room by ' + results[0]['banned_by']
+                    + ' on ' + results[0]['timestamp']);
+            }
+        });
     }
 });
 
@@ -345,17 +352,18 @@ bot.on('endsong', function (data) {
     
 	//Used for room enforcement
     //Reduces the number of songs remaining for the current DJ by one
-    if (config.enforcement.enforceroom) {
-        reducePastDJCounts(currentsong.djid);
-    }
-    else {
-        for (i in djs) {
-            if (djs[i].id == currentsong.djid) {
-                djs[i].remaining++;
+    if (djs.length == 5) {
+        if (config.enforcement.enforceroom) {
+            reducePastDJCounts(currentsong.djid);
+        }
+        else {
+            for (i in djs) {
+                if (djs[i].id == currentsong.djid) {
+                    djs[i].remaining++;
+                }
             }
         }
     }
-    
 
 	//Report song stats in chat
 	if (config.responses.reportsongstats) {
@@ -479,14 +487,15 @@ bot.on('rem_dj', function (data) {
     }
     legalstepdown = true;
 
-    if (djs.length == 1) {
-        if (botIsDJ) {
-            botStopDJ();
-        }
-        else {
-            botStartDJ();
-        }
-    }
+    // Never DJ
+    // if (djs.length == 1) {
+    //     if (botIsDJ) {
+    //         botStopDJ();
+    //     }
+    //     else {
+    //         botStartDJ();
+    //     }
+    // }
 });
 
 //Runs when a dj steps up
@@ -511,14 +520,15 @@ bot.on('add_dj', function(data) {
         checkStepup(data.user[0].userid, data.user[0].name);
     }
 
-    if (djs.length > 2 && botIsDJ) {
-        console.log('Bot should step down');
-        botStopDJ();
-    }
-    if (djs.length == 1 && !botIsDJ) {
-        console.log('Bot should step up')
-        botStartDJ();
-    }
+    // Keeping this here for auto bot DJ in the possible future
+    // if (djs.length > 2 && botIsDJ) {
+    //     console.log('Bot should step down');
+    //     botStopDJ();
+    // }
+    // if (djs.length == 1 && !botIsDJ) {
+    //     console.log('Bot should step up')
+    //     botStartDJ();
+    // }
     
 });
 
@@ -888,7 +898,7 @@ function welcomeUser(name, id) {
         }
     }
     else {
-        bot.speak('Uh oh... a bot!!');
+        bot.boot(user.userid, 'FU TTSTATS');
     }
 }
 
@@ -1239,11 +1249,16 @@ bot.on('tcpMessage', function (socket, msg) {
                     bot.vote('down');
                 }
                 break;
-                
-            case 'stepup':
-                bot.addDj();
-                response = {response: 'stepup', value: true};
+
+            case 'fu robot':
+                bot.speak("NO FU /tableflip");
+                bot.remDj(userid);
                 break;
+
+            // case 'stepup':
+            //     bot.addDj();
+            //     response = {response: 'stepup', value: true};
+            //     break;
             
             case 'stepdown':
                 bot.remDj(config.botinfo.userid);
@@ -1501,7 +1516,7 @@ function handleCommand (name, userid, text, source) {
     
     //Outputs github url for bot
 		case '.source':
-        var response = ('My source code is available at: http://git.io/bsbot');
+        var response = ('My source code is available at: http://git.io/4TclWQ');
         output({text: response, destination: source, userid: userid});
         break;
 
@@ -2270,11 +2285,11 @@ function handleCommand (name, userid, text, source) {
     	break;
 
     //Have the bot step up to DJ
-    case '!up':
-        if (admincheck(userid)) {
-            botStartDJ();
-        }
-        break;
+    // case '!up':
+    //     if (admincheck(userid)) {
+    //         botStartDJ();
+    //     }
+    //     break;
 
     //Have the bot jump off the decks
     case '!down':

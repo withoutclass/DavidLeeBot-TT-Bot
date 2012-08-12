@@ -1,56 +1,75 @@
-{"botinfo":
-	{"auth":"auth+live+759fa4415fab12c835a2c133558a296d2f0bc090",
-	"userid":"4f71b910590ca21a1c000a3b",
-	"laptoptype":"chrome"},
-"roomid":"4f686eca0c4cc8564952076c",
-"admins":
-	{"mainadmin":"4f0c63d4590ca2316f002990",
-	"admins": ["4f0c8870590ca2316f002a5b","4f181acb590ca21f70000f48"] },
-"database":
-	{"usedb":false,
-	"dbname":"nodejs_mysql_bsbot", 
-    "logchat":false,
-	"tablenames": 
-		{"song": "SONGLIST", 
-		"chat": "CHATLOG", 
-		"user": "USERS", 
-		"holiday": "HOLIDAY_GREETINGS"},
-	"login":{
-		"user":"root",
-		"password":"alpine"}},
-"lastfm":
-	{"useapi":false,
-	"lastfmkey":"#####"},
-"tcp":
-	 {"usetcp": true, 
-	"port": 8180, 
-	"host": "localhost"},
-"responses":
-	{"respond":true,
-	"reportsongstats":true,
-	"welcomeusers":true,
-    "welcomepm":true,
-	"greeting":"Welcome, ",
-	"ownerresponse":"sharedferret made me, BeSublime customized me!",
-	"sing":true, 
-	"rules": 
-		{"description": "No queue, fastest finger, be friendly :)"}
-	},
-"consolelog":false,
-"bonusvote":"VOTE",
-"enforcement":
-	{"enforceroom":false,
-    "waitlist":false,
-	"songstoplay":2,
-	"stepuprules":
-		{"waittostepup":true,
-		"waittype":"SONGS",
-		"length":4},
-	"ffarules":
-		{"multiplespotffa":true,
-		"timerffa":true,
-		"timeout":10}
-    }, 
-"maintenance": 
-	{"autorejoin": true}
+{
+    "botinfo": {
+        "auth": "auth+live+d745cd1174ae260831c0d70f9ffbf3c5e1998eac",
+        "userid": "4e6557c54fe7d042ef027700",
+        "laptoptype": "chrome"
+    },
+    "roomid": "4ff07c704fb0bb65470003b0",
+    "admins": {
+        "mainadmin": "4e729007a3f75112bb15d624",
+        "admins": [
+            "4e0a5a18a3f7517d0012fedd",
+            "4e141a9d4fe7d012520b0b96",
+            "4e729007a3f75112bb15d624"
+        ]
+    },
+    "database": {
+        "usedb": true,
+        "dbname": "ttfmrobot",
+        "logchat": false,
+        "tablenames": {
+            "song": "SONGLIST",
+            "chat": "CHATLOG",
+            "user": "USERS",
+            "holiday": "HOLIDAY_GREETINGS"
+        },
+        "login": {
+            "user": "contstable",
+            "password": "gotwang1",
+            "host": "localhost"
+        }
+    },
+    "lastfm": {
+        "useapi": true,
+        "lastfmkey": "d996e5581607d06f2ae23db3537a6138"
+    },
+    "tcp": {
+        "usetcp": true,
+        "port": 9050,
+        "host": "localhost"
+    },
+    "responses": {
+        "respond": true,
+        "reportsongstats": true,
+        "welcomeusers": true,
+        "welcomepm": true,
+        "pmgreet": "Welcome to EDM Cave (Electro/House/Dubstep/Trap), where the night is always young. The fine folks here want to let you know: EDM/Trap Music is Allowed Here. Free For All",
+        "greeting": "Welcome, ",
+        "ownerresponse": "Zabel!",
+        "sing": false,
+        "rules": {
+            "description": "No queue, fastest finger",
+            "link": "http://goo.gl/fRRFq"
+        }
+    },
+    "consolelog": true,
+    "bonusvote": "AUTO",
+    "enforcement": {
+        "enforceroom": true,
+        "waitlist": false,
+        "songstoplay": 2,
+        "stepuprules": {
+            "waittostepup": true,
+            "waittype": "SONGS",
+            "length": 1
+        },
+        "ffarules": {
+            "multiplespotffa": true,
+            "timerffa": true,
+            "timeout": 10
+        }
+    },
+    "maintenance": {
+        "autorejoin": true
+    }
 }
