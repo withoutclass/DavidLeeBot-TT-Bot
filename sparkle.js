@@ -352,7 +352,7 @@ bot.on('endsong', function (data) {
     
     //Used for room enforcement
     //Reduces the number of songs remaining for the current DJ by one
-    if (djs.length == 5) {
+    // if (djs.length == 5) {
         if (config.enforcement.enforceroom) {
             reducePastDJCounts(currentsong.djid);
         }
@@ -363,7 +363,7 @@ bot.on('endsong', function (data) {
                 }
             }
         }
-    }
+    // }
 
     //Report song stats in chat
     if (config.responses.reportsongstats) {
@@ -898,7 +898,7 @@ function welcomeUser(name, id) {
         }
     }
     else {
-        bot.boot(user.userid, 'FU TTSTATS');
+        bot.boot(id, 'FU TTSTATS');
     }
 }
 
@@ -2324,6 +2324,7 @@ function handleCommand (name, userid, text, source) {
 
     //Sends a PM to the user
     case '/pm':
+    case text.toLowerCase() == (botname + ', pm me'):
         if (source == 'speak') {
             bot.pm('Hey there! Type "commands" for a list of commands.', userid);
         } else if (source == 'pm') {

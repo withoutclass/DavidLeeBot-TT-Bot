@@ -70,7 +70,7 @@
         },
         "idling": {
             "removeidle": true,
-            "idlewarn": 7,
+            "idlewarn": 8,
             "idledown": 10
         }
     },
