@@ -920,7 +920,7 @@ function enforceRoom() {
 function reducePastDJCounts(djid) {
     //First, decrement last DJ count by 1. Set to remove if they need to step down
     for (i in djs) {
-        if (djs[i].id == djid) {
+        if (djs[i].id == djid && djs.length == 5) {
             djs[i].remaining--;
         }
         if (djs[i].remaining <= 0) {
@@ -1420,7 +1420,7 @@ function handleCommand (name, userid, text, source) {
         
         if (config.database.usedb) {
             
-            response += '(my)stats, (my)past24hours, (my)pastweek, '
+            response += '(my)stats, (my)hearts, (my)past24hours, (my)pastweek, '
                 + '(my)mostplayed, (my)mostawesomed, (my)mostlamed, mostsnagged, '
                 + 'bestdjs, worstdjs, pastnames [username], catfact, ';
         }
@@ -2082,7 +2082,18 @@ function handleCommand (name, userid, text, source) {
             });
         }
         break;
-            
+
+    case 'myhearts':
+        if (config.database.usedb) {
+            client.query('SELECT SUM(snags) AS SUM FROM '
+                + config.database.dbname + '.' + config.database.tablenames.song + ' WHERE (djid = \''+ userid +'\')',
+                function select(error, results, fields) {
+                    var response = 'You have ' + results[0]['SUM'] + ' hearts total!';
+                    output({text: response, destination: source, userid: userid});
+            });
+        }
+        break;
+
     //Returns the user's three most played songs
     case 'mymostplayed':
         if (config.database.usedb) {
