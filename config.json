@@ -67,6 +67,11 @@
             "multiplespotffa": true,
             "timerffa": true,
             "timeout": 10
+        },
+        "idling": {
+            "removeidle": true,
+            "idlewarn": 7,
+            "idledown": 10
         }
     },
     "maintenance": {
