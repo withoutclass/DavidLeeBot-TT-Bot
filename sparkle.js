@@ -389,11 +389,15 @@ bot.on('newsong', function (data) {
     //Skrillex is awful
     //Nickelback is the devil's spawn
     if ((currentsong.artist.indexOf('Skrillex') != -1)
+        || (currentsong.artist.indexOf('skrillex') != -1)
         || (currentsong.artist.indexOf('Nickelback') != -1)
         || (currentsong.song.indexOf('Skrillex') != -1)
-        || (currentsong.song.indexOf('Nickelback') != -1)) {
+        || (currentsong.song.indexOf('skrillex') != -1)
+        || (currentsong.song.indexOf('Nickelback') != -1)
+        || (currentsong.song.indexOf('Levels') != -1)
+        || (currentsong.song.indexOf('levels') != -1)) {
         bot.remDj(currentsong.djid);
-        bot.speak('NO.');
+        bot.speak('NO SKRILLEX OR LEVELS');
     }
 
     //Enforce stepdown rules
@@ -892,12 +896,10 @@ function welcomeUser(name, id) {
                         bot.speak(config.responses.greeting + name + '! ' + curMood + curTheme);
                     }
             });
-        } 
-        else {
+        } else {
             bot.speak(config.responses.greeting + name + '! ' + curMood + curTheme);
         }
-    }
-    else {
+    } else {
         bot.boot(id, 'FU TTSTATS');
     }
 }
@@ -2327,7 +2329,8 @@ function handleCommand (name, userid, text, source) {
         if (userid == config.admins.mainadmin) {
             var response = '';
             for (i in djs) {
-                response += usersList[djs[i].id].name + ' AFK=' + isAFK(djs[i].id,2) + ', ';
+                response += usersList[djs[i].id].name + ' AFK=' + isAFK(djs[i].id,2) + ', '
+                    + 'vote: ' + usersList[djs[i].id].vote + ', ';
             }
             output({text: response.substring(0, response.length - 2), destination: source, userid: userid});
         }
@@ -2346,8 +2349,10 @@ function handleCommand (name, userid, text, source) {
     
     //--------------------------------------
     // Matching commands (regex)
-    //--------------------------------------
-    if (text.toLowerCase() == 'fu robot') {
+    //-------------------------------------}
+
+    if (text.toLowerCase() == ('fu robot') 
+        || text.toLowerCase() == ('fu ' + botname)) {
         bot.speak("NO FU /tableflip");
         bot.remDj(userid);
     }
