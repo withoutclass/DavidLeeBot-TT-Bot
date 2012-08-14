@@ -762,3 +762,43 @@ global.snagSong = function() {
         bot.speak('Heart fart! <3');
     });
 }
+
+global.afkCheck = function() {
+    var afkLimitWarn = config.enforcement.idling.idlewarn;
+    var afkLimitDown = config.enforcement.idling.idledown;
+    
+    for (i = 0; i < djs.length; i++) {
+        dj = djs[i];
+        if (dj.id != config.botinfo.userid) {
+            if (usersList[dj.id].warned) {
+                if (currentsong.djid != dj.id && isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
+                    bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
+                    bot.remDj(dj.id); // remove them
+                }
+            }
+            else {
+                if (isAFK(dj.id, afkLimitWarn)) {
+                    bot.speak('@' + usersList[dj.id].name + ', wake up...!');
+                    usersList[dj.id].warned = true;
+                }
+            }
+        }
+    }
+}
+
+global.AFKTime = function(userID) {
+    var last   = usersList[userID].lastActivity;
+    var age_ms = Date.now() - last;
+    var age_m  = Math.floor(age_ms / 1000 / 60);
+    return age_m;
+}
+
+global.isAFK = function(userID, num) {
+    if (AFKTime(userID) >= num) {
+        return true;
+    }
+    return false;
+}
+
+if (config.enforcement.idling.removeidle)
+    setInterval(afkCheck, 60000);
