@@ -2337,8 +2337,10 @@ function handleCommand (name, userid, text, source) {
     
     //--------------------------------------
     // Matching commands (regex)
-    //--------------------------------------
-    if (text.toLowerCase() == 'fu robot') {
+    //-------------------------------------}
+
+    if (text.toLowerCase() == ('fu robot') 
+        || text.toLowerCase() == ('fu ' + botname)) {
         bot.speak("NO FU /tableflip");
         bot.remDj(userid);
     }
