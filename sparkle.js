@@ -922,7 +922,7 @@ function enforceRoom() {
 function reducePastDJCounts(djid) {
     //First, decrement last DJ count by 1. Set to remove if they need to step down
     for (i in djs) {
-        if (djs[i].id == djid) {
+        if (djs[i].id == djid && djs.length == 5) {
             djs[i].remaining--;
         }
         if (djs[i].remaining <= 0) {
