@@ -251,9 +251,13 @@ exports.endSongEventHandler = function (data) {
 
     //Report song stats in chat
     if (config.responses.reportsongstats) {
-        var endsongresponse = currentsong.song + ' stats: awesomes: '
-            + currentsong.up + ' lames: ' + currentsong.down
-            + ' snags: ' + currentsong.snags;
+        var awesomes = currentsong.up == 1 ? " awesome, " : " awesomes, ";
+        var lames = currentsong.down == 1 ? " lame, " : " lames, ";
+        var snags = currentsong.snags == 1 ? " snag." : " snags.";
+        
+        var endsongresponse = ':musical_note: ' + currentsong.song + ' stats: '
+            + currentsong.up + awesomes + currentsong.down
+            + lames + currentsong.snags + snags);
         if (config.enforcement.waitlist) {
             endsongresponse += ' waitlist: ' + waitlist.length + ' people.';
         }
