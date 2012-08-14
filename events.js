@@ -87,6 +87,13 @@ exports.updateVoteEventHandler = function (data) {
                 + data.room.metadata.upvotes + ' -' + data.room.metadata.downvotes
                 + ') ' + usersList[data.room.metadata.votelog[0][0]].name + '\u001b[0m');
         } else {
+
+            try {
+                bot.speak(usersList[data.room.metadata.votelog[0][0]].name + ' LAMED THE SONG');
+            } catch (err) {
+                // meh, don't expect to work most of the time but sometimes we do.
+            }
+
             console.log('\u001b[31m[ Vote ] (+'
                 + data.room.metadata.upvotes + ' -' + data.room.metadata.downvotes
                 + ') Downvote\u001b[0m');
@@ -263,8 +270,6 @@ exports.endSongEventHandler = function (data) {
         }
         bot.speak(endsongresponse);
     }
-    
-    
 }
 
 //Runs when a new song is played
