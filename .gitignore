@@ -2,3 +2,6 @@ node_modules
 nohup.out
 wills bot
 config.json
+driver.js
+node_modules
+setup.js

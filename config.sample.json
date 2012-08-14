@@ -1,11 +1,9 @@
 {"botinfo":
 	{"auth":"auth+live+#####",
 	"userid":"#####",
-	"laptoptype":"chrome"},
+	"botname":"meow"},
 "roomid":"4f1e02590c4cc807574030f1",
-"admins":
-	{"mainadmin":"#####",
-	"admins": ["#####"] },
+"admin":"#####",
 "database":
 	{"usedb":false,
 	"dbname":"nodejs_mysql_treehouse", 
@@ -17,19 +15,23 @@
 		"holiday": "HOLIDAY_GREETINGS"},
 	"login":{
 		"user":"#####",
-		"password":"#####"}},
+		"password":"#####",
+        "host": "localhost"}},
 "lastfm":
 	{"useapi":false,
 	"lastfmkey":"#####"},
-"tcp":
-	 {"usetcp": true, 
-	"port": 8180, 
-	"host": "localhost"},
+"http":
+    {"usehttp": true,
+    "port": 8181,
+    "host": "localhost"},
 "responses":
 	{"respond":true,
+    "announcebonus":true,
 	"reportsongstats":true,
 	"welcomeusers":true,
     "welcomepm":true,
+    "alwayspm":false,
+    "pmgreet": "Welcome to Indie/Classic Alternative 1 & Done! No queue, fastest finger, play one song and step down. Full rules at http://tinyurl.com/63hr2jl . Type 'commands' to see a list of commands I can respond to.",
 	"greeting":"Welcome, ",
 	"ownerresponse":"sharedferret made me, BeSublime customized me!",
 	"sing":false, 
@@ -54,7 +56,7 @@
 	"ffarules":
 		{"multiplespotffa":true,
 		"timerffa":true,
-		"timeout":10},
+		"timeout":10}
     }, 
 "maintenance": 
 	{"autorejoin": true}}
