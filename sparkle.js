@@ -389,11 +389,15 @@ bot.on('newsong', function (data) {
     //Skrillex is awful
     //Nickelback is the devil's spawn
     if ((currentsong.artist.indexOf('Skrillex') != -1)
+        || (currentsong.artist.indexOf('skrillex') != -1)
         || (currentsong.artist.indexOf('Nickelback') != -1)
         || (currentsong.song.indexOf('Skrillex') != -1)
-        || (currentsong.song.indexOf('Nickelback') != -1)) {
+        || (currentsong.song.indexOf('skrillex') != -1)
+        || (currentsong.song.indexOf('Nickelback') != -1)
+        || (currentsong.song.indexOf('Levels') != -1)
+        || (currentsong.song.indexOf('levels') != -1)) {
         bot.remDj(currentsong.djid);
-        bot.speak('NO.');
+        bot.speak('NO SKRILLEX OR LEVELS');
     }
 
     //Enforce stepdown rules
@@ -892,12 +896,10 @@ function welcomeUser(name, id) {
                         bot.speak(config.responses.greeting + name + '! ' + curMood + curTheme);
                     }
             });
-        } 
-        else {
+        } else {
             bot.speak(config.responses.greeting + name + '! ' + curMood + curTheme);
         }
-    }
-    else {
+    } else {
         bot.boot(id, 'FU TTSTATS');
     }
 }
