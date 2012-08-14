@@ -743,3 +743,9 @@ global.handleCommand = function (name, userid, text, source) {
         }
     }    
 }
+
+global.snagSong = function() {
+    bot.snag(function() {
+        bot.speak('Heart fart! <3');
+    });
+}
