@@ -274,6 +274,16 @@ exports.endSongEventHandler = function (data) {
 exports.newSongEventHandler = function (data) {
     //Populate new song data in currentsong
     populateSongData(data);
+    
+	//Skrillex is awful
+	//Nickelback is the devil's spawn
+    if ((currentsong.artist.indexOf('Skrillex') != -1)
+        || (currentsong.artist.indexOf('Nickelback') != -1)
+	    || (currentsong.song.indexOf('Skrillex') != -1)
+	    || (currentsong.song.indexOf('Nickelback') != -1)) {
+        bot.remDj(currentsong.djid);
+		bot.speak('NO.');
+	}
 
     //Enforce stepdown rules
     if (usertostep != null) {
