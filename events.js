@@ -264,7 +264,7 @@ exports.endSongEventHandler = function (data) {
         
         var endsongresponse = ':musical_note: ' + currentsong.song + ' stats: '
             + currentsong.up + awesomes + currentsong.down
-            + lames + currentsong.snags + snags);
+            + lames + currentsong.snags + snags;
         if (config.enforcement.waitlist) {
             endsongresponse += ' waitlist: ' + waitlist.length + ' people.';
         }

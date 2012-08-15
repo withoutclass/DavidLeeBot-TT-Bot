@@ -206,11 +206,6 @@ function initializeModules () {
             + '\nUse the command \'npm install xml2js\' to install.');
         process.exit(33);
     }
-
-    //Create HTTP listeners
-    if (config.http.usehttp) {
-        bot.listen(config.http.port, config.http.host);
-    }
     
     //Load commands
     try {
@@ -726,7 +721,7 @@ global.handleCommand = function (name, userid, text, source) {
     }
     
     if (text.toLowerCase() == ('fu robot') 
-        || text.toLowerCase() == ('fu ' + botname)) {
+        || text.toLowerCase() == ('fu ' + config.botinfo.botname)) {
         bot.speak("NO FU /tableflip");
         bot.remDj(userid);
     }
