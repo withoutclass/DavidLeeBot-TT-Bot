@@ -9,9 +9,7 @@ exports.handler = function(data) {
         //If the target has been met, the bot will awesome
         if((bonuspoints.length >= target) && !bonusvote 
             && (currentsong.djid != config.botinfo.userid)) {
-            bot.speak('Bonus!');
-            bot.vote('up');
-            bonusvote = true;
+            snagThisSong(1);
         }
     }
 }

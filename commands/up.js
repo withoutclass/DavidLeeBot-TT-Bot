@@ -6,6 +6,6 @@ exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data) {
     if (admincheck(data.userid)) {
-        bot.addDj();
+        botStartDJ();
     }
 }

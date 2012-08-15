@@ -69,13 +69,7 @@ exports.updateVoteEventHandler = function (data) {
     //is set to VOTE, give a bonus point
     if ((config.bonusvote == 'VOTE') && !bonusvote && (currentsong.djid != config.botinfo.userid)) {
         if (currentsong.up >= bonusvotepoints) {
-            bot.vote('up');
-            if (config.enforcement.announcebonus) {
-                bot.speak('Bonus!');
-            }
-            bonuspoints.push('xxMEOWxx');
-            bonusvote = true;
-            bot.snag();
+            snagThisSong(2);
         }
     }
 
@@ -392,6 +386,15 @@ exports.remDjEventHandler = function (data) {
         announceNextPersonOnWaitlist();
     }
     legalstepdown = true;
+
+    if (djs.length == 1) {
+        if (botIsDJ) {
+            botStopDJ();
+        }
+        else {
+            botStartDJ();
+        }
+    }
 }
 
 //Runs when a dj steps up
@@ -426,6 +429,13 @@ exports.addDjEventHandler = function(data) {
     else if (config.enforcement.enforceroom && config.enforcement.stepuprules.waittostepup) {
         checkStepup(data.user[0].userid, data.user[0].name);
     }
+
+    if (djs.length > 2 && botIsDJ) {
+        botStopDJ();
+    }
+    if (djs.length == 1 && !botIsDJ) {
+        botStartDJ();
+    }
 }
 
 exports.snagEventHandler = function(data) {
@@ -444,10 +454,7 @@ exports.snagEventHandler = function(data) {
     
     var target = getTarget();
     if((bonuspoints.length >= target) && !bonusvote && (config.bonusvote == 'CHAT') && (currentsong.djid != config.botinfo.userid)) {
-        bot.speak('Bonus!');
-        bot.vote('up');
-        bot.snag();
-        bonusvote = true;
+        snagThisSong(1);
     }    
 }
 

@@ -56,6 +56,7 @@ global.moderators = new Array();
 global.bonuspoints = new Array();      //An array of DJs wanting the bot to bonus
 global.bonusvote = false;              //A flag denoting if the bot has bonus'd a song
 global.bonusvotepoints = 0;            //The number of awesomes needed for the bot to awesome
+global.botIsDJ = false;
 
 //Current song info
 global.currentsong = {
@@ -722,6 +723,30 @@ global.handleCommand = function (name, userid, text, source) {
         }, timetowait);
     }
 }
+
+global.snagThisSong = function(snagType) {
+    bot.vote('up');
+    if (config.enforcement.announcebonus) {
+        bot.speak('Bonus!');
+    }
+    if (snagType == 2) {
+        bonuspoints.push('xxMEOWxx');
+    }
+    bonusvote = true;
+    bot.playlistAdd(currentsong.songid)
+    bot.snag();
+}
+
+global.botStartDJ = function() {
+    bot.addDj();
+    botIsDJ = true;
+}
+
+global.botStopDJ = function() {
+    bot.remDj(config.botinfo.userid);
+    botIsDJ = false;
+}
+
 
 global.snagSong = function() {
     bot.snag(function() {
