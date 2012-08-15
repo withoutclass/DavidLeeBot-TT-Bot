@@ -384,7 +384,7 @@ global.addToDb = function (data) {
 
 global.welcomeUser = function (name, id) {
     //Ignore ttdashboard bots
-    if (!name.match(/^ttdashboard/)) {
+    if (!name.match(/^ttstats/)) {
         if (id == '4f5628b9a3f7515810008122') {
             bot.speak(':cat: <3 :wolf:');
         }
@@ -706,22 +706,8 @@ global.handleCommand = function (name, userid, text, source) {
         }
     }
     
-    //Have the bot step up to DJ
-    if (text.toLowerCase() == (config.botinfo.botname + ', step up')) {
-        if (admincheck(userid)) {
-            bot.addDj();
-        }
-    }
-    
-    //Have the bot jump off the decks
-    if (text.toLowerCase() == (config.botinfo.botname + ', step down')) {
-        if (admincheck(userid)) {
-            bot.remDj(config.botinfo.userid);
-        }
-    }
-    
     //Hug bot
-    if (text.toLowerCase() == ('hugs ' + config.botinfo.botname) || text.toLowerCase() == 'hugs meow') {
+    if (text.toLowerCase() == ('hugs ' + config.botinfo.botname) {
         var rand = Math.random();
         var timetowait = 1600;
         if (rand < 0.4) {
@@ -735,15 +721,6 @@ global.handleCommand = function (name, userid, text, source) {
             output({text: response, destination: source, userid: userid});
         }, timetowait);
     }
-    
-    //Sends a PM to the user
-    if (text.toLowerCase() == (config.botinfo.botname + ', pm me')) {
-        if (source == 'speak') {
-            bot.pm('Hey there! Type "commands" for a list of commands.', userid);
-        } else if (source == 'pm') {
-            bot.pm('But... you PM\'d me that. Do you think I\'m stupid? >:T', userid);
-        }
-    }    
 }
 
 global.snagSong = function() {
