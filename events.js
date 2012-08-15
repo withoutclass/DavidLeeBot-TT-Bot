@@ -75,6 +75,7 @@ exports.updateVoteEventHandler = function (data) {
             }
             bonuspoints.push('xxMEOWxx');
             bonusvote = true;
+            bot.snag();
         }
     }
 

@@ -1,8 +1,10 @@
 /**
  *  sparkle.js
  *  Author: sharedferret
+ *  Customizations: ronaldb64
  *  
  *  A Turntable.fm bot for the Indie/Classic Alternative 1 + Done room.
+ *  RB: Modifications done for Better Off 80's room
  *  Based on bot implementations by anamorphism and heatvision
  *  Uses node.js with node modules ttapi, mysql, request
  * 
@@ -425,7 +427,7 @@ global.reducePastDJCounts = function (djid) {
     for (i in djs) {
         if (djs[i].id == djid) {
             djs[i].remaining--;
-            if (djs[i].remaining <= 0) {
+            if (djs[i].remaining <= 0 && waitlist.length > 0) {
                 userstepped = false;
                 usertostep = djid;
             }
@@ -574,7 +576,7 @@ global.checkWaitlist = function (userid, name) {
 
 global.announceNextPersonOnWaitlist = function () {
     if (waitlist.length > 0 && djs.length < 5) {
-        bot.speak('The next spot is for @' + waitlist[0].name + '! You\'ve got 30 seconds to step up!');
+        bot.speak('The open spot is for @' + waitlist[0].name + '! You\'ve got 30 seconds to step up!');
         output({text: 'Hey! This spot is yours, so go ahead and step up!', destination: 'pm',
             userid: waitlist[0].id});
             
