@@ -232,7 +232,7 @@ exports.endSongEventHandler = function (data) {
 
     //If a DJ that needed to step down hasn't by the end of the
     //next DJ's song, remove them immediately
-    if (config.enforcement.enforceroom && !userstepped) {
+    if (config.enforcement.enforceroom && !userstepped && usertostep != null) {
         bot.remDj(usertostep);
     }
     
