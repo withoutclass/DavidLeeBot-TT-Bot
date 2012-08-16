@@ -385,7 +385,7 @@ global.addToDb = function (data) {
 
 global.welcomeUser = function (name, id) {
     //Ignore ttdashboard bots
-    if (!name.match(/^ttstats/)) {
+    if (!name.match(/^@ttstats/)) {
         if (id == '4f5628b9a3f7515810008122') {
             bot.speak(':cat: <3 :wolf:');
         }
@@ -405,6 +405,9 @@ global.welcomeUser = function (name, id) {
         } else {
             bot.speak(config.responses.greeting + name + '!');
         }
+    }
+    else {
+        bot.speak('Uh oh... a bot!!');
     }
 }
 
@@ -751,6 +754,35 @@ global.botStopDJ = function() {
     botIsDJ = false;
 }
 
+global.justActive = function(userid) {
+    usersList[userid].lastActivity = new Date();
+}
+
+global.addDJToList = function(DJid) {
+    if (config.enforcement.enforceroom) {
+        var toplay = config.enforcement.songstoplay;
+        //If they've been up recently, modify their remaining count
+        for (i in partialdjs) {
+            if (partialdjs[i].id == DJid) {
+                toplay = partialdjs[i].lefttoplay;
+                partialdjs.splice(i, 1);
+            }
+        }
+        djs.push({id: DJid, remaining: toplay});
+    } else {
+        djs.push({id: DJid, remaining: 0});
+    }
+}
+
+global.isAFK = function(userID, num) {
+    var last   = usersList[userId].lastActivity;
+    var age_ms = Date.now() - last;
+    var age_m  = Math.floor(age_ms / 1000 / 60);
+    if (age_m >= num) {
+        return true;
+    }
+    return false;
+}
 
 global.snagSong = function() {
     bot.snag(function() {

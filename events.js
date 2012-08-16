@@ -17,11 +17,7 @@ exports.roomChangedEventHandler = function(data) {
 
         //Creates the dj list
         for (i in data.room.metadata.djs) {
-            if (config.enforcement.enforceroom) {
-                djs.push({id: data.room.metadata.djs[i], remaining: config.enforcement.songstoplay});
-            } else {
-                djs.push({id: data.room.metadata.djs[i], remaining: 0});
-            }
+            addDJtoList(data.room.metadata.djs[i]);
         }
     }
     
@@ -39,8 +35,8 @@ exports.roomChangedEventHandler = function(data) {
     var users = data.users;
     for (i in users) {
         var user = users[i];
-        user.lastActivity = new Date();
         usersList[user.userid] = user;
+        justActive(user.userid);
     }
     
     //Adds all active users to the users table - updates lastseen if we've seen
@@ -75,7 +71,7 @@ exports.updateVoteEventHandler = function (data) {
     }
     
     // A vote is user activity - store that
-    usersList[data.room.metadata.votelog[0][0]].lastActivity = new Date();
+    justActive(data.room.metadata.votelog[0][0]);
 
     //Log vote in console
     //Note: Username only displayed for upvotes, since TT doesn't broadcast
@@ -103,8 +99,8 @@ exports.registeredEventHandler = function (data) {
     
     //Add user to usersList
     var user = data.user[0];
-    user.lastActivity = new Date();
     usersList[user.userid] = user;
+    justActive(user.userid);
     if (currentsong != null) {
         currentsong.listeners++;
     }
@@ -195,7 +191,7 @@ exports.deregisteredEventHandler = function (data) {
 //Commands are added under switch(text)
 exports.speakEventHandler = function (data) {
     // Update user's last activity
-    usersList[data.userid].lastActivity = new Date();
+    justActive(data.userid);
 
     //Log in console
     if (config.consolelog) {
@@ -340,7 +336,7 @@ exports.newSongEventHandler = function (data) {
 //Logs in console
 exports.remDjEventHandler = function (data) {
     // Register activity for this user
-    userslist[data.user[0].userid].lastActivity = new Date();
+    justActive(data.user[0].userid);
 
     //Log in console
     //console.log(data.user[0]);
@@ -412,7 +408,7 @@ exports.remDjEventHandler = function (data) {
 //Logs in console
 exports.addDjEventHandler = function(data) {
     //Register activity for that user
-    usersList[data.user[0].userid].lastActivity = new Date();
+    justActive(data.user[0].userid);
 
     //Log in console
     if (config.consolelog) {
@@ -420,21 +416,7 @@ exports.addDjEventHandler = function(data) {
     }
     
     //Add to DJ list
-    if (config.enforcement.enforceroom) {
-        var toplay = config.enforcement.songstoplay;
-        //If they've been up recently, modify their remaining count
-        for (i in partialdjs) {
-            if (partialdjs[i].id == data.user[0].userid) {
-                toplay = partialdjs[i].lefttoplay;
-                partialdjs.splice(i, 1);
-            }
-        }
-        djs.push({id: data.user[0].userid, remaining: toplay});
-    } else {
-        djs.push({id: data.user[0].userid, remaining: 0});
-    }
-    
-
+    addDJtoList(data.user[0].userid);
     
     if (config.enforcement.waitlist) {
         checkWaitlist(data.user[0].userid, data.user[0].name);
@@ -454,7 +436,7 @@ exports.addDjEventHandler = function(data) {
 
 exports.snagEventHandler = function(data) {
     //Register activity for that user
-    usersList[data.user[0].userid].lastActivity = new Date();
+    justActive(data.userid);
 
     //Log in console
     if (config.consolelog) {
