@@ -756,6 +756,7 @@ global.botStopDJ = function() {
 
 global.justActive = function(userid) {
     usersList[userid].lastActivity = new Date();
+	usersList[userid].warned = false;
 }
 
 global.addDJToList = function(DJid) {
@@ -774,15 +775,44 @@ global.addDJToList = function(DJid) {
     }
 }
 
-global.isAFK = function(userID, num) {
-    var last   = usersList[userId].lastActivity;
+global.AFKTime = function(userID) {
+    var last   = usersList[userID].lastActivity;
     var age_ms = Date.now() - last;
     var age_m  = Math.floor(age_ms / 1000 / 60);
-    if (age_m >= num) {
+    return age_m;
+}
+
+global.isAFK = function(userID, num) {
+    if (AFKTime(userID) >= num) {
         return true;
     }
     return false;
 }
+
+global.afkCheck = function() {
+    var afkLimitWarn = 10;
+    var afkLimitDown = 15;
+    
+    for (i = 0; i < djs.length; i++) {
+        dj = djs[i];
+        if (dj.id != config.botinfo.userid) {
+            if (usersList[dj.id].warned) {
+                if (isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
+                    bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
+                    bot.remDj(dj.id); // remove them
+                }
+            }
+            else {
+                if (isAFK(dj.id, afkLimitWarn) {
+                    bot.speak('@' + usersList[dj.id].name + ', wake up...!');
+                    usersList[dj.id].warned = true;
+                }
+            }
+        }
+    }
+}
+setInterval(afkCheck, 60000);
+
 
 global.snagSong = function() {
     bot.snag(function() {
