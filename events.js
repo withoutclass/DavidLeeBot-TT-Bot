@@ -39,6 +39,7 @@ exports.roomChangedEventHandler = function(data) {
     var users = data.users;
     for (i in users) {
         var user = users[i];
+        user.lastActivity = new Date();
         usersList[user.userid] = user;
     }
     
@@ -72,6 +73,9 @@ exports.updateVoteEventHandler = function (data) {
             snagThisSong(2);
         }
     }
+    
+    // A vote is user activity - store that
+    usersList[data.room.metadata.votelog[0][0]].lastActivity = new Date();
 
     //Log vote in console
     //Note: Username only displayed for upvotes, since TT doesn't broadcast
@@ -99,6 +103,7 @@ exports.registeredEventHandler = function (data) {
     
     //Add user to usersList
     var user = data.user[0];
+    user.lastActivity = new Date();
     usersList[user.userid] = user;
     if (currentsong != null) {
         currentsong.listeners++;
@@ -189,6 +194,9 @@ exports.deregisteredEventHandler = function (data) {
 //Responds based on coded commands, logs in console, adds chat entry to chatlog table
 //Commands are added under switch(text)
 exports.speakEventHandler = function (data) {
+    // Update user's last activity
+    usersList[data.userid].lastActivity = new Date();
+
     //Log in console
     if (config.consolelog) {
         console.log('[ Chat ] ' + data.name +': ' + data.text);
@@ -331,6 +339,9 @@ exports.newSongEventHandler = function (data) {
 //Runs when a dj steps down
 //Logs in console
 exports.remDjEventHandler = function (data) {
+    // Register activity for this user
+    userslist[data.user[0].userid].lastActivity = new Date();
+
     //Log in console
     //console.log(data.user[0]);
     if (config.consolelog) {
@@ -400,6 +411,9 @@ exports.remDjEventHandler = function (data) {
 //Runs when a dj steps up
 //Logs in console
 exports.addDjEventHandler = function(data) {
+    //Register activity for that user
+    usersList[data.user[0].userid].lastActivity = new Date();
+
     //Log in console
     if (config.consolelog) {
         console.log('\u001b[35m[ + DJ ] ' + data.user[0].name + '\u001b[0m');
@@ -439,6 +453,9 @@ exports.addDjEventHandler = function(data) {
 }
 
 exports.snagEventHandler = function(data) {
+    //Register activity for that user
+    usersList[data.user[0].userid].lastActivity = new Date();
+
     //Log in console
     if (config.consolelog) {
         console.log('[ Snag ] ' + usersList[data.userid].name);

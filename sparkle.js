@@ -428,9 +428,10 @@ global.reducePastDJCounts = function (djid) {
     for (i in djs) {
         if (djs[i].id == djid) {
             djs[i].remaining--;
-            if (djs[i].remaining <= 0 && waitlist.length > 0) {
+        }
+        if (djs[i].remaining <= 0 && waitlist.length > 0 && usertostep == null) {
                 userstepped = false;
-                usertostep = djid;
+                usertostep = djs[i].id;
             }
         }
     }
@@ -681,7 +682,7 @@ global.handleCommand = function (name, userid, text, source) {
     
     //Shuts down bot (only the main admin can run this)
     //Disconnects from room, exits process.
-    if (text.toLowerCase() == (config.botinfo.botname + ', shut down')) {
+    if (text.toLowerCase() == ('#shutdown')) {
         if (userid == config.admin) {
             bot.speak('Shutting down...');
             bot.roomDeregister();
@@ -691,7 +692,7 @@ global.handleCommand = function (name, userid, text, source) {
     
     //Shuts down bot (only the main admin can run this)
     //Disconnects from room, exits process.
-    if (text.toLowerCase() == (config.botinfo.botname + ', go away')) {
+    if (text.toLowerCase() == ('#restart')) {
         if (userid == config.admin) {
             bot.speak('Shutting down...');
             bot.roomDeregister();
@@ -699,7 +700,7 @@ global.handleCommand = function (name, userid, text, source) {
         }
     }
     
-    if (text.toLowerCase() == (config.botinfo.botname + ', come back later')) {
+    if (text.toLowerCase() == ('#comebacklater')) {
         if (userid == config.admin) {
             bot.speak('I\'ll be back in ten minutes!');
             bot.roomDeregister();
@@ -733,7 +734,10 @@ global.snagThisSong = function(snagType) {
         bonuspoints.push('xxMEOWxx');
     }
     bonusvote = true;
-    bot.playlistAdd(currentsong.songid)
+    // Add new song near end of playlist
+    bot.playlistAll(function (data) {
+        bot.playlistAdd(currentsong.id, (data.list.length - 1));
+    }); 
     bot.snag();
 }
 
