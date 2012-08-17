@@ -433,9 +433,8 @@ global.reducePastDJCounts = function (djid) {
             djs[i].remaining--;
         }
         if (djs[i].remaining <= 0 && waitlist.length > 0 && usertostep == null) {
-                userstepped = false;
-                usertostep = djs[i].id;
-            }
+            userstepped = false;
+            usertostep = djs[i].id;
         }
     }
     
@@ -712,7 +711,7 @@ global.handleCommand = function (name, userid, text, source) {
     }
     
     //Hug bot
-    if (text.toLowerCase() == ('hugs ' + config.botinfo.botname) {
+    if (text.toLowerCase() == ('hugs ' + config.botinfo.botname)) {
         var rand = Math.random();
         var timetowait = 1600;
         if (rand < 0.4) {
@@ -803,7 +802,7 @@ global.afkCheck = function() {
                 }
             }
             else {
-                if (isAFK(dj.id, afkLimitWarn) {
+                if (isAFK(dj.id, afkLimitWarn)) {
                     bot.speak('@' + usersList[dj.id].name + ', wake up...!');
                     usersList[dj.id].warned = true;
                 }
