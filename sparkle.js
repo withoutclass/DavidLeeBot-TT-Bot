@@ -1,8 +1,10 @@
 /**
  *  sparkle.js
  *  Author: sharedferret
+ *  Customizations: ronaldb64
  *  
  *  A Turntable.fm bot for the Indie/Classic Alternative 1 + Done room.
+ *  RB: Modifications done for Better Off 80's room
  *  Based on bot implementations by anamorphism and heatvision
  *  Uses node.js with node modules ttapi, mysql, request
  * 
@@ -61,6 +63,7 @@ global.moderators = new Array();
 global.bonuspoints = new Array();      //An array of DJs wanting the bot to bonus
 global.bonusvote = false;              //A flag denoting if the bot has bonus'd a song
 global.bonusvotepoints = 0;            //The number of awesomes needed for the bot to awesome
+global.botIsDJ = false;
 
 //Current song info
 global.currentsong = {
@@ -383,8 +386,14 @@ global.addToDb = function (data) {
 
 global.welcomeUser = function (name, id) {
     //Ignore ttdashboard bots
-    if (!name.match(/ttstats/)) {
-        if (config.database.usedb) {
+    if (!name.match(/^@ttstats/)) {
+        if (id == '4f5628b9a3f7515810008122') {
+            bot.speak(':cat: <3 :wolf:');
+        }
+        else if (id == '4df0443f4fe7d0631905d6a8') {
+            bot.speak(':cat: <3 ' + name);
+        }
+        else if (config.database.usedb) {
             client.query('SELECT greeting FROM ' + config.database.dbname + '.'
                 + config.database.tablenames.holiday + ' WHERE date LIKE CURDATE()',
                 function cbfunc(error, results, fields) {
@@ -399,6 +408,9 @@ global.welcomeUser = function (name, id) {
         }
     } else {
         bot.boot(id, 'FU TTSTATS');
+    }
+    else {
+        bot.speak('Uh oh... a bot!!');
     }
 }
 
@@ -422,9 +434,10 @@ global.reducePastDJCounts = function (djid) {
     for (i in djs) {
         if (djs[i].id == djid && djs.length == 5) {
             djs[i].remaining--;
-            if (djs[i].remaining <= 0) {
+        }
+        if (djs[i].remaining <= 0 && waitlist.length > 0 && usertostep == null) {
                 userstepped = false;
-                usertostep = djid;
+                usertostep = djs[i].id;
             }
         }
     }
@@ -573,7 +586,7 @@ global.checkWaitlist = function (userid, name) {
 
 global.announceNextPersonOnWaitlist = function () {
     if (waitlist.length > 0 && djs.length < 5) {
-        bot.speak('The next spot is for @' + waitlist[0].name + '! You\'ve got 30 seconds to step up!');
+        bot.speak('The open spot is for @' + waitlist[0].name + '! You\'ve got 30 seconds to step up!');
         output({text: 'Hey! This spot is yours, so go ahead and step up!', destination: 'pm',
             userid: waitlist[0].id});
             
@@ -676,7 +689,7 @@ global.handleCommand = function (name, userid, text, source) {
     //--------------------------------------
     
     //Disconnects from room, exits process.
-    if (text.toLowerCase() == (config.botinfo.botname + ', shut down')) {
+    if (text.toLowerCase() == ('#shutdown')) {
         if (userid == config.admin) {
             bot.speak('Shutting down...');
             bot.roomDeregister();
@@ -686,7 +699,7 @@ global.handleCommand = function (name, userid, text, source) {
     
     //Shuts down bot (only the main admin can run this)
     //Disconnects from room, exits process.
-    if (text.toLowerCase() == (config.botinfo.botname + ', go away')) {
+    if (text.toLowerCase() == ('#restart')) {
         if (userid == config.admin) {
             bot.speak('Shutting down...');
             bot.roomDeregister();
@@ -694,7 +707,7 @@ global.handleCommand = function (name, userid, text, source) {
         }
     }
     
-    if (text.toLowerCase() == (config.botinfo.botname + ', come back later')) {
+    if (text.toLowerCase() == ('#comebacklater')) {
         if (userid == config.admin) {
             bot.speak('I\'ll be back in ten minutes!');
             bot.roomDeregister();
@@ -702,7 +715,6 @@ global.handleCommand = function (name, userid, text, source) {
         }
     }
     
-    //Have the bot step up to DJ
     // if (text.toLowerCase() == (config.botinfo.botname + ', step up')) {
     //     if (admincheck(userid)) {
     //         bot.addDj();
@@ -723,7 +735,7 @@ global.handleCommand = function (name, userid, text, source) {
     }
 
     //Hug bot
-    if (text.toLowerCase() == ('hugs ' + config.botinfo.botname) || text.toLowerCase() == 'hugs meow') {
+    if (text.toLowerCase() == ('hugs ' + config.botinfo.botname) {
         var rand = Math.random();
         var timetowait = 1600;
         if (rand < 0.4) {
@@ -737,16 +749,93 @@ global.handleCommand = function (name, userid, text, source) {
             output({text: response, destination: source, userid: userid});
         }, timetowait);
     }
-    
-    //Sends a PM to the user
-    if (text.toLowerCase() == (config.botinfo.botname + ', pm me')) {
-        if (source == 'speak') {
-            bot.pm('Hey there! Type "commands" for a list of commands.', userid);
-        } else if (source == 'pm') {
-            bot.pm('But... you PM\'d me that. Do you think I\'m stupid? >:T', userid);
-        }
-    }    
 }
+
+global.snagThisSong = function(snagType) {
+    bot.vote('up');
+    if (config.enforcement.announcebonus) {
+        bot.speak('Bonus!');
+    }
+    if (snagType == 2) {
+        bonuspoints.push('xxMEOWxx');
+    }
+    bonusvote = true;
+    // Add new song near end of playlist
+    bot.playlistAll(function (data) {
+        bot.playlistAdd(currentsong.id, (data.list.length - 1));
+    }); 
+    bot.snag();
+}
+
+global.botStartDJ = function() {
+    bot.addDj();
+    botIsDJ = true;
+}
+
+global.botStopDJ = function() {
+    bot.remDj(config.botinfo.userid);
+    botIsDJ = false;
+}
+
+global.justActive = function(userid) {
+    usersList[userid].lastActivity = new Date();
+	usersList[userid].warned = false;
+}
+
+global.addDJToList = function(DJid) {
+    if (config.enforcement.enforceroom) {
+        var toplay = config.enforcement.songstoplay;
+        //If they've been up recently, modify their remaining count
+        for (i in partialdjs) {
+            if (partialdjs[i].id == DJid) {
+                toplay = partialdjs[i].lefttoplay;
+                partialdjs.splice(i, 1);
+            }
+        }
+        djs.push({id: DJid, remaining: toplay});
+    } else {
+        djs.push({id: DJid, remaining: 0});
+    }
+}
+
+global.AFKTime = function(userID) {
+    var last   = usersList[userID].lastActivity;
+    var age_ms = Date.now() - last;
+    var age_m  = Math.floor(age_ms / 1000 / 60);
+    return age_m;
+}
+
+global.isAFK = function(userID, num) {
+    if (AFKTime(userID) >= num) {
+        return true;
+    }
+    return false;
+}
+
+global.afkCheck = function() {
+    var afkLimitWarn = 10;
+    var afkLimitDown = 15;
+    
+    for (i = 0; i < djs.length; i++) {
+        dj = djs[i];
+        if (dj.id != config.botinfo.userid) {
+            if (usersList[dj.id].warned) {
+                if (isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
+                    bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
+                    bot.remDj(dj.id); // remove them
+                }
+            }
+            else {
+                if (isAFK(dj.id, afkLimitWarn) {
+                    bot.speak('@' + usersList[dj.id].name + ', wake up...!');
+                    usersList[dj.id].warned = true;
+                }
+            }
+        }
+    }
+}
+setInterval(afkCheck, 60000);
+
 
 global.snagSong = function() {
     bot.snag(function() {
