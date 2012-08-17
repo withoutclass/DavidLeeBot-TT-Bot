@@ -9,5 +9,5 @@ exports.handler = function(data) {
 	for (i = 0; i < djs.length; i++) {
 		response += usersList[djs[i].id].name + ': ' + AFKTime(djs[i].id) + ', ';
 	}
-	output({text: response.substring(0, response.length - 2), destination: source, userid: userid});
+	output({text: response.substring(0, response.length - 2), destination: data.source, userid: data.userid});
 }

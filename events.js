@@ -17,7 +17,7 @@ exports.roomChangedEventHandler = function(data) {
 
         //Creates the dj list
         for (i in data.room.metadata.djs) {
-            addDJtoList(data.room.metadata.djs[i]);
+            addDJToList(data.room.metadata.djs[i]);
         }
     }
     
@@ -422,7 +422,7 @@ exports.addDjEventHandler = function(data) {
     }
     
     //Add to DJ list
-    addDJtoList(data.user[0].userid);
+    addDJToList(data.user[0].userid);
     
     if (config.enforcement.waitlist) {
         checkWaitlist(data.user[0].userid, data.user[0].name);
