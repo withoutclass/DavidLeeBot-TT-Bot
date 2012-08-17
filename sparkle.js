@@ -2,25 +2,25 @@
  *  sparkle.js
  *  Author: sharedferret
  *  Customizations: ronaldb64
- *  
+ *
  *  A Turntable.fm bot for the Indie/Classic Alternative 1 + Done room.
  *  RB: Modifications done for Better Off 80's room
  *  Based on bot implementations by anamorphism and heatvision
  *  Uses node.js with node modules ttapi, mysql, request
- * 
+ *
  *  Run: 'node sparkle.js'
- *  
+ *
  *  Make sure parameters in config.js are set before running.
  *  Make sure a mysql server instance is running before starting the bot (if useDatabase
  *  is enabled in the config file)
  *
-*/
+ */
 
 var args = process.argv;
 global.version = '[Sparkle] Version 1.0.7';
 
 global.fs = require('fs');
-global.url = require('url'); 
+global.url = require('url');
 
 global.Bot;
 global.bot;
@@ -31,10 +31,9 @@ global.request;
 global.parser;
 global.singalong;
 global.uptime = new Date();
-global.commands = new Array();              //Array of command handlers
-global.httpcommands = new Array();          //Array of HTTP handlers
-global.events = require('./events.js');     //Event handlers
-
+global.commands = new Array(); //Array of command handlers
+global.httpcommands = new Array(); //Array of HTTP handlers
+global.events = require('./events.js'); //Event handlers
 initializeModules();
 
 // mood & theme vars
@@ -44,25 +43,24 @@ var mood = noMood;
 var theme = noTheme;
 
 //Room information
-global.usersList = { };                     //A list of users in the room
-global.djs = new Array();                   //A list of current DJs
-global.partialdjs = new Array();            //A list of DJs who have stepped down before their
-                                            //allotted # of songs
-
+global.usersList = {}; //A list of users in the room
+global.djs = new Array(); //A list of current DJs
+global.partialdjs = new Array(); //A list of DJs who have stepped down before their
+//allotted # of songs
 //Room enforcement variables
-global.usertostep = null;                     //The userid of the DJ to step down
-global.userstepped = false;            //A flag denoting if that user has stepped down
-global.enforcementtimeout = new Date();//The time that the user stepped down
-global.ffa = false;                    //A flag denoting if free-for-all mode is active
-global.legalstepdown = true;           //A flag denoting if a user stepped up legally
-global.pastdjs = new Array();          //An array of the past 4 DJs
+global.usertostep = null; //The userid of the DJ to step down
+global.userstepped = false; //A flag denoting if that user has stepped down
+global.enforcementtimeout = new Date(); //The time that the user stepped down
+global.ffa = false; //A flag denoting if free-for-all mode is active
+global.legalstepdown = true; //A flag denoting if a user stepped up legally
+global.pastdjs = new Array(); //An array of the past 4 DJs
 global.waitlist = new Array();
 global.moderators = new Array();
 
 //Used for bonus awesoming
-global.bonuspoints = new Array();      //An array of DJs wanting the bot to bonus
-global.bonusvote = false;              //A flag denoting if the bot has bonus'd a song
-global.bonusvotepoints = 0;            //The number of awesomes needed for the bot to awesome
+global.bonuspoints = new Array(); //An array of DJs wanting the bot to bonus
+global.bonusvote = false; //A flag denoting if the bot has bonus'd a song
+global.bonusvotepoints = 0; //The number of awesomes needed for the bot to awesome
 global.botIsDJ = false;
 
 //Current song info
@@ -75,10 +73,10 @@ global.currentsong = {
     down: 0,
     listeners: 0,
     snags: 0,
-    id: null };
-    
-// Event listeners
+    id: null
+};
 
+// Event listeners
 bot.on('ready', events.readyEventHandler);
 
 bot.on('roomChanged', events.roomChangedEventHandler);
@@ -105,7 +103,7 @@ bot.on('snagged', events.snagEventHandler);
 
 bot.on('booted_user', events.bootedUserEventHandler);
 
-bot.on('pmmed', events.pmEventHandler); 
+bot.on('pmmed', events.pmEventHandler);
 
 bot.on('update_user', events.updateUserEventHandler);
 
@@ -122,14 +120,14 @@ process.on('message', function(data) {
 });
 
 // Functions
-function initializeModules () {
+
+function initializeModules() {
     //Creates the bot listener
     try {
         Bot = require('ttapi');
-    } catch(e) {
+    } catch (e) {
         console.log(e);
-        console.log('It is likely that you do not have the ttapi node module installed.'
-            + '\nUse the command \'npm install ttapi\' to install.');
+        console.log('It is likely that you do not have the ttapi node module installed.' + '\nUse the command \'npm install ttapi\' to install.');
         process.exit(33);
     }
 
@@ -140,13 +138,13 @@ function initializeModules () {
         } else {
             config = JSON.parse(fs.readFileSync('config.json', 'ascii'));
         }
-    } catch(e) {
+    } catch (e) {
         //todo: update error handling
         console.log(e);
         console.log('Error loading config.json. Check that your config file exists and is valid JSON.');
         process.exit(33);
     }
-    
+
     bot = new Bot(config.botinfo.auth, config.botinfo.userid, config.roomid);
 
     //Loads bot singalongs
@@ -155,8 +153,7 @@ function initializeModules () {
             singalong = require('./singalong.js');
         } catch (e) {
             console.log(e);
-            console.log('Ensure that singalong.js is present in this directory,'
-                + ' or disable the botSing flag in config.js');
+            console.log('Ensure that singalong.js is present in this directory,' + ' or disable the botSing flag in config.js');
             console.log('Starting bot without singalong functionality.');
             config.responses.sing = false;
         }
@@ -166,10 +163,9 @@ function initializeModules () {
     if (config.database.usedb) {
         try {
             mysql = require('mysql');
-        } catch(e) {
+        } catch (e) {
             console.log(e);
-            console.log('It is likely that you do not have the mysql node module installed.'
-                + '\nUse the command \'npm install mysql\' to install.');
+            console.log('It is likely that you do not have the mysql node module installed.' + '\nUse the command \'npm install mysql\' to install.');
             console.log('Starting bot without database functionality.');
             config.database.usedb = false;
         }
@@ -180,11 +176,15 @@ function initializeModules () {
             if (config.database.login.host != null && config.database.login.host != '') {
                 dbhost = config.database.login.host;
             }
-            client = mysql.createClient({user: config.database.login.user, password: config.database.login.password, database: config.database.dbname, host: dbhost});
-        } catch(e) {
+            client = mysql.createClient({
+                user: config.database.login.user,
+                password: config.database.login.password,
+                database: config.database.dbname,
+                host: dbhost
+            });
+        } catch (e) {
             console.log(e);
-            console.log('Make sure that a mysql server instance is running and that the '
-                + 'username and password information in config.js are correct.');
+            console.log('Make sure that a mysql server instance is running and that the ' + 'username and password information in config.js are correct.');
             console.log('Starting bot without database functionality.');
             config.database.usedb = false;
         }
@@ -193,42 +193,49 @@ function initializeModules () {
     //Initializes request module
     try {
         request = require('request');
-    } catch(e) {
+    } catch (e) {
         console.log(e);
-        console.log('It is likely that you do not have the request node module installed.'
-            + '\nUse the command \'npm install request\' to install.');
+        console.log('It is likely that you do not have the request node module installed.' + '\nUse the command \'npm install request\' to install.');
         process.exit(33);
     }
-    
+
     try {
         xml2js = require('xml2js');
         parser = new xml2js.Parser();
-    } catch(e) {
+    } catch (e) {
         console.log(e);
-        console.log('It is likely that you do not have the xml2js node module installed.'
-            + '\nUse the command \'npm install xml2js\' to install.');
+        console.log('It is likely that you do not have the xml2js node module installed.' + '\nUse the command \'npm install xml2js\' to install.');
         process.exit(33);
     }
-    
+
     //Load commands
     try {
         var filenames = fs.readdirSync('./commands');
         for (i in filenames) {
             var command = require('./commands/' + filenames[i]);
-            commands.push({name: command.name, handler: command.handler, hidden: command.hidden,
-                enabled: command.enabled, matchStart: command.matchStart});
+            commands.push({
+                name: command.name,
+                handler: command.handler,
+                hidden: command.hidden,
+                enabled: command.enabled,
+                matchStart: command.matchStart
+            });
         }
     } catch (e) {
         //
     }
-    
+
     //Load http commands
     try {
         var filenames = fs.readdirSync('./api');
         for (i in filenames) {
             var command = require('./api/' + filenames[i]);
-            httpcommands.push({name: command.name, handler: command.handler, hidden: command.hidden,
-                enabled: command.enabled});
+            httpcommands.push({
+                name: command.name,
+                handler: command.handler,
+                hidden: command.hidden,
+                enabled: command.enabled
+            });
         }
     } catch (e) {
         //
@@ -238,59 +245,35 @@ function initializeModules () {
 //Sets up the database
 global.setUpDatabase = function() {
     //song table
-    client.query('CREATE TABLE ' + config.database.tablenames.song
-        + '(id INT(11) AUTO_INCREMENT PRIMARY KEY,'
-        + ' artist VARCHAR(255),'
-        + ' song VARCHAR(255),'
-        + ' djid VARCHAR(255),'
-        + ' up INT(3),' + ' down INT(3),'
-        + ' listeners INT(3),'
-        + ' started DATETIME,'
-        + ' snags INT(3),'
-        + ' bonus INT(3))',
-            
-        function (error) {
-            //Handle an error if it's not a table already exists error
-            if(error && error.number != 1050) {
-                throw (error);
-            }
+    client.query('CREATE TABLE ' + config.database.tablenames.song + '(id INT(11) AUTO_INCREMENT PRIMARY KEY,' + ' artist VARCHAR(255),' + ' song VARCHAR(255),' + ' djid VARCHAR(255),' + ' up INT(3),' + ' down INT(3),' + ' listeners INT(3),' + ' started DATETIME,' + ' snags INT(3),' + ' bonus INT(3))',
+
+    function(error) {
+        //Handle an error if it's not a table already exists error
+        if (error && error.number != 1050) {
+            throw (error);
+        }
     });
 
     //chat table
-    client.query('CREATE TABLE ' + config.database.tablenames.chat
-        + '(id INT(11) AUTO_INCREMENT PRIMARY KEY,'
-        + ' userid VARCHAR(255),'
-        + ' chat VARCHAR(255),'
-        + ' time DATETIME)',
-        function (error) {
-            //Handle an error if it's not a table already exists error
-            if(error && error.number != 1050) {
-                throw (error);
-            }
+    client.query('CREATE TABLE ' + config.database.tablenames.chat + '(id INT(11) AUTO_INCREMENT PRIMARY KEY,' + ' userid VARCHAR(255),' + ' chat VARCHAR(255),' + ' time DATETIME)', function(error) {
+        //Handle an error if it's not a table already exists error
+        if (error && error.number != 1050) {
+            throw (error);
+        }
     });
-        
+
     //user table
-    client.query('CREATE TABLE ' + config.database.tablenames.user
-        + '(userid VARCHAR(255), '
-        + 'username VARCHAR(255), '
-        + 'lastseen DATETIME, '
-        + 'PRIMARY KEY (userid, username))',
-        function (error) {
-            //Handle an error if it's not a table already exists error
-            if(error && error.number != 1050) {
-                throw (error);
-            }
+    client.query('CREATE TABLE ' + config.database.tablenames.user + '(userid VARCHAR(255), ' + 'username VARCHAR(255), ' + 'lastseen DATETIME, ' + 'PRIMARY KEY (userid, username))', function(error) {
+        //Handle an error if it's not a table already exists error
+        if (error && error.number != 1050) {
+            throw (error);
+        }
     });
-    
-    client.query('CREATE TABLE BANNED_USERS ('
-        + 'id INT(11) AUTO_INCREMENT PRIMARY KEY, '
-        + 'userid VARCHAR(255), '
-        + 'banned_by VARCHAR(255), '
-        + 'timestamp DATETIME)',
-        function (error) {
-            if (error && error.number != 1050) {
-                throw error;
-            }
+
+    client.query('CREATE TABLE BANNED_USERS (' + 'id INT(11) AUTO_INCREMENT PRIMARY KEY, ' + 'userid VARCHAR(255), ' + 'banned_by VARCHAR(255), ' + 'timestamp DATETIME)', function(error) {
+        if (error && error.number != 1050) {
+            throw error;
+        }
     });
 }
 
@@ -309,13 +292,15 @@ global.populateSongData = function(data) {
 
 //Format: output({text: [required], destination: [required],
 //                userid: [required for PM], format: [optional]});
-global.output = function (data) {
+global.output = function(data) {
     if (data.destination == 'speak') {
         bot.speak(data.text);
     } else if (data.destination == 'pm') {
         bot.pm(data.text, data.userid);
     } else if (data.destination == 'http') {
-        response.writeHead(200, {'Content-Type': 'text/plain'});
+        response.writeHead(200, {
+            'Content-Type': 'text/plain'
+        });
         if (data.format == 'json') {
             response.end(JSON.stringify(data.text));
         } else {
@@ -326,15 +311,14 @@ global.output = function (data) {
 
 //Checks if the user id is present in the admin list. Authentication
 //for admin-only privileges.
-global.admincheck = function (userid) {
-    return (userid === config.admin ||
-        moderators.some(function(moderatorid) {
-            return moderatorid === userid;
-        }));
+global.admincheck = function(userid) {
+    return (userid === config.admin || moderators.some(function(moderatorid) {
+        return moderatorid === userid;
+    }));
 }
 
 //TODO: Implement
-global.checkAuth = function (givenKey) {
+global.checkAuth = function(givenKey) {
     return false;
 }
 
@@ -344,7 +328,7 @@ global.checkAFK = function() {
 
 //The bot will respond to a Reptar call with a variant of 'rawr!' based on
 //the result from a RNG.
-global.reptarCall = function (source) {
+global.reptarCall = function(source) {
     var rand = Math.random();
     var response = '';
     if (rand < 0.05) {
@@ -369,39 +353,24 @@ global.reptarCall = function (source) {
 
 //Adds the song data to the songdata table.
 //This runs on the endsong event.
-global.addToDb = function (data) {
-    client.query(
-        'INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.song +' '
-        + 'SET artist = ?,song = ?, djid = ?, up = ?, down = ?,'
-        + 'listeners = ?, started = NOW(), snags = ?, bonus = ?',
-        [currentsong.artist, 
-        currentsong.song,  
-        currentsong.djid, 
-        currentsong.up, 
-        currentsong.down, 
-        currentsong.listeners,
-        currentsong.snags,
-        bonuspoints.length]);
+global.addToDb = function(data) {
+    client.query('INSERT INTO ' + config.database.dbname + '.' + config.database.tablenames.song + ' ' + 'SET artist = ?,song = ?, djid = ?, up = ?, down = ?,' + 'listeners = ?, started = NOW(), snags = ?, bonus = ?', [currentsong.artist, currentsong.song, currentsong.djid, currentsong.up, currentsong.down, currentsong.listeners, currentsong.snags, bonuspoints.length]);
 }
 
-global.welcomeUser = function (name, id) {
+global.welcomeUser = function(name, id) {
     //Ignore ttdashboard bots
     if (!name.match(/^@ttstats/)) {
         if (id == '4f5628b9a3f7515810008122') {
             bot.speak(':cat: <3 :wolf:');
-        }
-        else if (id == '4df0443f4fe7d0631905d6a8') {
+        } else if (id == '4df0443f4fe7d0631905d6a8') {
             bot.speak(':cat: <3 ' + name);
-        }
-        else if (config.database.usedb) {
-            client.query('SELECT greeting FROM ' + config.database.dbname + '.'
-                + config.database.tablenames.holiday + ' WHERE date LIKE CURDATE()',
-                function cbfunc(error, results, fields) {
-                    if (results != null && results[0] != null) {
-                        bot.speak(results[0]['greeting'] + ', ' + name + '! ');
-                    } else {
-                        bot.speak(config.responses.greeting + name + '! ');
-                    }
+        } else if (config.database.usedb) {
+            client.query('SELECT greeting FROM ' + config.database.dbname + '.' + config.database.tablenames.holiday + ' WHERE date LIKE CURDATE()', function cbfunc(error, results, fields) {
+                if (results != null && results[0] != null) {
+                    bot.speak(results[0]['greeting'] + ', ' + name + '! ');
+                } else {
+                    bot.speak(config.responses.greeting + name + '! ');
+                }
             });
         } else {
             bot.speak(config.responses.greeting + name + '!');
@@ -409,19 +378,16 @@ global.welcomeUser = function (name, id) {
     } else {
         bot.boot(id, 'FU TTSTATS');
     }
-    else {
-        bot.speak('Uh oh... a bot!!');
-    }
 }
 
 //Reminds a user that has just played a song to step down, and pulls them
 //off stage if they do not step down.
-global.enforceRoom = function () {
-    setTimeout( function() {
-        if(!userstepped) {
+global.enforceRoom = function() {
+    setTimeout(function() {
+        if (!userstepped) {
             bot.speak('@' + usersList[usertostep].name + ', please step down');
-            setTimeout( function() {
-                if(!userstepped) {
+            setTimeout(function() {
+                if (!userstepped) {
                     bot.remDj(usertostep);
                 }
             }, 15000);
@@ -429,143 +395,146 @@ global.enforceRoom = function () {
     }, 15000);
 }
 
-global.reducePastDJCounts = function (djid) {
+global.reducePastDJCounts = function(djid) {
     //First, decrement last DJ count by 1. Set to remove if they need to step down
     for (i in djs) {
         if (djs[i].id == djid && djs.length == 5) {
             djs[i].remaining--;
         }
         if (djs[i].remaining <= 0 && waitlist.length > 0 && usertostep == null) {
-                userstepped = false;
-                usertostep = djs[i].id;
-            }
-        }
-    }
-    
-    //Reduces past DJ counts and removes from past dj list if necessary
-    if (config.enforcement.stepuprules.waittostepup) {
-    
-        //Decrease count in pastdjs list by 1
-        if (config.enforcement.stepuprules.waittype == 'SONGS') {
-            for (i in pastdjs) {
-                pastdjs[i].wait--;
-            }
-            
-            //Remove if they're done waiting
-            for (i in pastdjs) {
-                if (pastdjs[i].wait < 1) {
-                    pastdjs.splice(i, 1);
-                }
-            }
-        }
-        else if (config.enforcement.stepuprules.waittype == 'MINUTES') {
-            //tbh nothing should be here
+            userstepped = false;
+            usertostep = djs[i].id;
         }
     }
 }
+
+//Reduces past DJ counts and removes from past dj list if necessary
+if (config.enforcement.stepuprules.waittostepup) {
+
+    //Decrease count in pastdjs list by 1
+    if (config.enforcement.stepuprules.waittype == 'SONGS') {
+        for (i in pastdjs) {
+            pastdjs[i].wait--;
+        }
+
+        //Remove if they're done waiting
+        for (i in pastdjs) {
+            if (pastdjs[i].wait < 1) {
+                pastdjs.splice(i, 1);
+            }
+        }
+    } else if (config.enforcement.stepuprules.waittype == 'MINUTES') {
+        //tbh nothing should be here
+    }
+}
+
 
 // Functions
-
 //Adds the user to the past DJ list
-global.addToPastDJList = function (userid) {
+global.addToPastDJList = function(userid) {
     if (config.enforcement.stepuprules.waittype == 'SONGS') {
-        pastdjs.push({id: userid, wait: config.enforcement.stepuprules.length});
-    }
-    else if (config.enforcement.stepuprules.waittype == 'MINUTES') {
+        pastdjs.push({
+            id: userid,
+            wait: config.enforcement.stepuprules.length
+        });
+    } else if (config.enforcement.stepuprules.waittype == 'MINUTES') {
         var pushdate = new Date();
-        pastdjs.push({id: userid, wait: pushdate});
-        
+        pastdjs.push({
+            id: userid,
+            wait: pushdate
+        });
+
         //I don't think this works yet, but it's how i should remove people
         var fnc = function(y) {
-        setTimeout(function() {
-            for (i in pastdjs) {
-                if ((new Date().getTime() - pastdjs[i].wait.getTime()) > 
-                    (config.enforcement.stepuprules.length * 60000)
-                    && (pushdate == pastdjs[i].wait)) {
-                    pastdjs.splice(i, 1);
-                }
+                setTimeout(function() {
+                    for (i in pastdjs) {
+                        if ((new Date().getTime() - pastdjs[i].wait.getTime()) > (config.enforcement.stepuprules.length * 60000) && (pushdate == pastdjs[i].wait)) {
+                            pastdjs.splice(i, 1);
+                        }
+                    }
+                }, config.enforcement.stepuprules.length * 60000);
             }
-        }, config.enforcement.stepuprules.length * 60000);
-        }(pushdate);
     }
 }
 
-global.addToWaitlist = function (userid, name, source) {
+global.addToWaitlist = function(userid, name, source) {
     //Case 1: User is DJing already
     for (i in djs) {
         if (djs[i].id == userid) {
-            output({text: 'You\'re currently DJing!', destination: source, userid: userid});
+            output({
+                text: 'You\'re currently DJing!',
+                destination: source,
+                userid: userid
+            });
             return false;
         }
     }
-    
+
     //Case 2: User is already in the waitlist
     for (i in waitlist) {
         if (waitlist[i].id == userid) {
-            output({text: 'You\'re already on the list, ' + name + '.', destination: source, 
-                userid: userid});
+            output({
+                text: 'You\'re already on the list, ' + name + '.',
+                destination: source,
+                userid: userid
+            });
             return false;
         }
     }
-    
+
     //Otherwise, add to waitlist
-    waitlist.push({name: name, id: userid});
-    output({text: 'You\'ve been added to the queue. Your position is ' + waitlist.length + '.',
-        destination: source, userid: userid});
+    waitlist.push({
+        name: name,
+        id: userid
+    });
+    output({
+        text: 'You\'ve been added to the queue. Your position is ' + waitlist.length + '.',
+        destination: source,
+        userid: userid
+    });
     if (waitlist.length == 1 && djs.length < 5) {
         announceNextPersonOnWaitlist();
     }
     return true;
 }
 
-global.checkStepup = function (userid, name) {
+global.checkStepup = function(userid, name) {
     //Get time elapsed between previous dj stepping down and this dj stepping up
     var waittime = new Date().getTime() - enforcementtimeout.getTime();
     for (i in pastdjs) {
         if (pastdjs[i].id == userid) {
             //if the user waited longer than the FFA timeout or it's a free-for-all,
             //remove from list. Else, remove dj and warn
-            
             if (config.enforcement.ffarules.multiplespotffa && ffa) {
                 legalstepdown = true;
-            }
-            else if (config.enforcement.ffarules.timerffa) {
+            } else if (config.enforcement.ffarules.timerffa) {
                 legalstepdown = (waittime > (config.enforcement.ffarules.timeout * 1000));
-            }
-            else {
+            } else {
                 legalstepdown = false;
             }
-            
+
             if (legalstepdown) {
                 for (i in pastdjs) {
                     if (pastdjs[i].id == userid) {
                         pastdjs.splice(i, 1);
                     }
                 }
-            }
-            else {
+            } else {
                 bot.remDj(userid);
-                
+
                 if (config.enforcement.stepuprules.waittype == 'SONGS') {
-                    bot.speak(name + ', please wait ' + pastdjs[i].wait
-                        + ' more songs or '
-                        + (config.enforcement.ffarules.timeout - Math.floor(waittime/1000))
-                        + ' more seconds before DJing again.');
+                    bot.speak(name + ', please wait ' + pastdjs[i].wait + ' more songs or ' + (config.enforcement.ffarules.timeout - Math.floor(waittime / 1000)) + ' more seconds before DJing again.');
+                } else if (config.enforcement.stepuprules.waittype == 'MINUTES') {
+                    var timeremaining = (config.enforcement.stepuprules.length * 60000) - (new Date().getTime() - pastdjs[i].wait.getTime());
+
+                    bot.speak(name + ', please wait ' + Math.floor(timeremaining / 60000) + ' minutes and ' + Math.floor((timeremaining % 60000) / 1000) + ' seconds before DJing again.');
                 }
-                else if (config.enforcement.stepuprules.waittype == 'MINUTES') {
-                    var timeremaining = (config.enforcement.stepuprules.length * 60000)
-                        - (new Date().getTime() - pastdjs[i].wait.getTime());
-                    
-                    bot.speak(name + ', please wait ' + Math.floor(timeremaining / 60000)
-                        + ' minutes and ' + Math.floor((timeremaining % 60000) / 1000)
-                        + ' seconds before DJing again.');
-                }
-            }       
+            }
         }
     }
 }
 
-global.checkWaitlist = function (userid, name) {
+global.checkWaitlist = function(userid, name) {
     if (waitlist.length > 0) {
         //If they're not first, remove/warn
         if (waitlist[0].id == userid) {
@@ -576,21 +545,23 @@ global.checkWaitlist = function (userid, name) {
             return true;
         }
         bot.remDj(userid);
-        bot.speak(name + ', you\'re not next on the waitlist. Please let '
-            + waitlist[0].name + ' up.');
+        bot.speak(name + ', you\'re not next on the waitlist. Please let ' + waitlist[0].name + ' up.');
         legalstepdown = false;
         return false;
     }
     return true;
 }
 
-global.announceNextPersonOnWaitlist = function () {
+global.announceNextPersonOnWaitlist = function() {
     if (waitlist.length > 0 && djs.length < 5) {
         bot.speak('The open spot is for @' + waitlist[0].name + '! You\'ve got 30 seconds to step up!');
-        output({text: 'Hey! This spot is yours, so go ahead and step up!', destination: 'pm',
-            userid: waitlist[0].id});
-            
-        
+        output({
+            text: 'Hey! This spot is yours, so go ahead and step up!',
+            destination: 'pm',
+            userid: waitlist[0].id
+        });
+
+
         var waitingfor = waitlist[0].id;
         setTimeout(function() {
             //See if user has stepped up, if not, call "next" function
@@ -618,12 +589,12 @@ global.getVoteTarget = function() {
         return 2;
     }
     //Trendline on the average number of awesomes in the 1+Done room
-    return Math.ceil(Math.pow(1.1383*(currentsong.listeners - 3), 0.6176));
+    return Math.ceil(Math.pow(1.1383 * (currentsong.listeners - 3), 0.6176));
 }
 
 //Checks if the user can step up
 //TODO: Change this to support waitlists (when I implement them)
-global.canUserStep = function (name, userid) {
+global.canUserStep = function(name, userid) {
     //Case 1: DJ is already on the decks
     for (i in djs) {
         if (djs[i].id == userid) {
@@ -631,18 +602,17 @@ global.canUserStep = function (name, userid) {
             return 'You\'re already up!';
         }
     }
-    
+
     //Case 2: fastest-finger
     if (config.enforcement.ffarules.multiplespotffa && (djs.length < 4)) {
         return 'There\'s more than one spot open, so anyone can step up!';
     }
-    
+
     //Case 3: Longer than FFA timeout
-    if (config.enforcement.ffarules.timerffa && (djs.length < 5)
-        && ((new Date()).getTime() - enforcementtimeout > (config.enforcement.ffarules.length * 1000))) {
+    if (config.enforcement.ffarules.timerffa && (djs.length < 5) && ((new Date()).getTime() - enforcementtimeout > (config.enforcement.ffarules.length * 1000))) {
         return 'It\'s been ' + config.enforcement.ffarules.length + ' seconds, so anyone can step up!';
     }
-    
+
     //Case 4: DJ in queue
     //The bot will tell the user how much longer they must wait
     for (i in pastdjs) {
@@ -654,40 +624,47 @@ global.canUserStep = function (name, userid) {
                     return (name + ', please wait another ' + pastdjs[i].wait + ' songs.');
                 }
             } else if (config.enforcement.stepuprules.waittype == 'MINUTES' && config.enforcement.stepuprules.waittostepup) {
-                var timeremaining = (config.enforcement.stepuprules.length * 60000)
-                    - (new Date().getTime() - pastdjs[i].wait.getTime());
-                
-                return (name + ', please wait ' + Math.floor(timeremaining / 60000) + ' minutes and '
-                    + Math.floor((timeremaining % 60000)/1000) + ' seconds.');
+                var timeremaining = (config.enforcement.stepuprules.length * 60000) - (new Date().getTime() - pastdjs[i].wait.getTime());
+
+                return (name + ', please wait ' + Math.floor(timeremaining / 60000) + ' minutes and ' + Math.floor((timeremaining % 60000) / 1000) + ' seconds.');
             }
         }
     }
-    
+
     //Case 5: Free to step up, but no spots
     if (djs.length == 5) {
         return (name + ', you can, but there aren\'t any spots...');
     }
-    
+
     //Default: Free to step up
     return (name + ', go ahead!');
 }
 
 //Handles chat commands
-global.handleCommand = function (name, userid, text, source) {
+global.handleCommand = function(name, userid, text, source) {
     for (i in commands) {
         if (commands[i].matchStart && (text.indexOf(commands[i].name) == 0)) {
-            commands[i].handler({name: name, userid: userid, text: text, source: source});
+            commands[i].handler({
+                name: name,
+                userid: userid,
+                text: text,
+                source: source
+            });
             break;
         } else if (commands[i].name == text) {
-            commands[i].handler({name: name, userid: userid, text: text, source: source});
+            commands[i].handler({
+                name: name,
+                userid: userid,
+                text: text,
+                source: source
+            });
             break;
         }
     }
-    
+
     //--------------------------------------
     // Matching commands (regex)
     //--------------------------------------
-    
     //Disconnects from room, exits process.
     if (text.toLowerCase() == ('#shutdown')) {
         if (userid == config.admin) {
@@ -696,7 +673,7 @@ global.handleCommand = function (name, userid, text, source) {
             process.exit(0);
         }
     }
-    
+
     //Shuts down bot (only the main admin can run this)
     //Disconnects from room, exits process.
     if (text.toLowerCase() == ('#restart')) {
@@ -706,7 +683,7 @@ global.handleCommand = function (name, userid, text, source) {
             process.exit(33);
         }
     }
-    
+
     if (text.toLowerCase() == ('#comebacklater')) {
         if (userid == config.admin) {
             bot.speak('I\'ll be back in ten minutes!');
@@ -714,39 +691,45 @@ global.handleCommand = function (name, userid, text, source) {
             process.exit(34);
         }
     }
-    
+
     // if (text.toLowerCase() == (config.botinfo.botname + ', step up')) {
     //     if (admincheck(userid)) {
     //         bot.addDj();
     //     }
     // }
-    
     //Have the bot jump off the decks
     if (text.toLowerCase() == (config.botinfo.botname + ', step down')) {
         if (admincheck(userid)) {
             bot.remDj(config.botinfo.userid);
         }
     }
-    
-    if (text.toLowerCase() == ('fu robot') 
-        || text.toLowerCase() == ('fu ' + config.botinfo.botname)) {
+
+    if (text.toLowerCase() == ('fu robot') || text.toLowerCase() == ('fu ' + config.botinfo.botname)) {
         bot.speak("NO FU /tableflip");
         bot.remDj(userid);
     }
 
     //Hug bot
-    if (text.toLowerCase() == ('hugs ' + config.botinfo.botname) {
+    if (text.toLowerCase() == ('hugs ' + config.botinfo.botname)) {
         var rand = Math.random();
         var timetowait = 1600;
         if (rand < 0.4) {
             setTimeout(function() {
-                output({text: 'Awww!', destination: source, userid: userid});
+                output({
+                    text: 'Awww!',
+                    destination: source,
+                    userid: userid
+                });
             }, 1500);
             timetowait += 600;
         }
         setTimeout(function() {
             var response = ('hugs ' + name);
-            output({text: response, destination: source, userid: userid});
+            output({
+                text: response,
+                destination: source,
+                userid: userid
+            });
         }, timetowait);
     }
 }
@@ -761,9 +744,9 @@ global.snagThisSong = function(snagType) {
     }
     bonusvote = true;
     // Add new song near end of playlist
-    bot.playlistAll(function (data) {
+    bot.playlistAll(function(data) {
         bot.playlistAdd(currentsong.id, (data.list.length - 1));
-    }); 
+    });
     bot.snag();
 }
 
@@ -779,7 +762,7 @@ global.botStopDJ = function() {
 
 global.justActive = function(userid) {
     usersList[userid].lastActivity = new Date();
-	usersList[userid].warned = false;
+    usersList[userid].warned = false;
 }
 
 global.addDJToList = function(DJid) {
@@ -792,16 +775,22 @@ global.addDJToList = function(DJid) {
                 partialdjs.splice(i, 1);
             }
         }
-        djs.push({id: DJid, remaining: toplay});
+        djs.push({
+            id: DJid,
+            remaining: toplay
+        });
     } else {
-        djs.push({id: DJid, remaining: 0});
+        djs.push({
+            id: DJid,
+            remaining: 0
+        });
     }
 }
 
 global.AFKTime = function(userID) {
-    var last   = usersList[userID].lastActivity;
+    var last = usersList[userID].lastActivity;
     var age_ms = Date.now() - last;
-    var age_m  = Math.floor(age_ms / 1000 / 60);
+    var age_m = Math.floor(age_ms / 1000 / 60);
     return age_m;
 }
 
@@ -815,7 +804,7 @@ global.isAFK = function(userID, num) {
 global.afkCheck = function() {
     var afkLimitWarn = 10;
     var afkLimitDown = 15;
-    
+
     for (i = 0; i < djs.length; i++) {
         dj = djs[i];
         if (dj.id != config.botinfo.userid) {
@@ -824,9 +813,8 @@ global.afkCheck = function() {
                     bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
                     bot.remDj(dj.id); // remove them
                 }
-            }
-            else {
-                if (isAFK(dj.id, afkLimitWarn) {
+            } else {
+                if (isAFK(dj.id, afkLimitWarn)) {
                     bot.speak('@' + usersList[dj.id].name + ', wake up...!');
                     usersList[dj.id].warned = true;
                 }
@@ -846,7 +834,7 @@ global.snagSong = function() {
 global.afkCheck = function() {
     var afkLimitWarn = config.enforcement.idling.idlewarn;
     var afkLimitDown = config.enforcement.idling.idledown;
-    
+
     for (i = 0; i < djs.length; i++) {
         dj = djs[i];
         if (dj.id != config.botinfo.userid) {
@@ -855,8 +843,7 @@ global.afkCheck = function() {
                     bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
                     bot.remDj(dj.id); // remove them
                 }
-            }
-            else {
+            } else {
                 if (isAFK(dj.id, afkLimitWarn)) {
                     bot.speak('@' + usersList[dj.id].name + ', wake up...!');
                     usersList[dj.id].warned = true;
@@ -867,9 +854,9 @@ global.afkCheck = function() {
 }
 
 global.AFKTime = function(userID) {
-    var last   = usersList[userID].lastActivity;
+    var last = usersList[userID].lastActivity;
     var age_ms = Date.now() - last;
-    var age_m  = Math.floor(age_ms / 1000 / 60);
+    var age_m = Math.floor(age_ms / 1000 / 60);
     return age_m;
 }
 
@@ -880,5 +867,4 @@ global.isAFK = function(userID, num) {
     return false;
 }
 
-if (config.enforcement.idling.removeidle)
-    setInterval(afkCheck, 60000);
+if (config.enforcement.idling.removeidle) setInterval(afkCheck, 60000);
