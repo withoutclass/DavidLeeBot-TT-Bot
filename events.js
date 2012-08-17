@@ -408,15 +408,6 @@ exports.remDjEventHandler = function (data) {
         announceNextPersonOnWaitlist();
     }
     legalstepdown = true;
-
-    if (djs.length == 1) {
-        if (botIsDJ) {
-            botStopDJ();
-        }
-        else {
-            botStartDJ();
-        }
-    }
 }
 
 //Runs when a dj steps up
@@ -439,13 +430,6 @@ exports.addDjEventHandler = function(data) {
     //See if this user is in the past djs list
     else if (config.enforcement.enforceroom && config.enforcement.stepuprules.waittostepup) {
         checkStepup(data.user[0].userid, data.user[0].name);
-    }
-
-    if (djs.length > 2 && botIsDJ) {
-        botStopDJ();
-    }
-    if (djs.length == 1 && !botIsDJ) {
-        botStartDJ();
     }
 }
 
