@@ -383,26 +383,22 @@ global.addToDb = function (data) {
 
 global.welcomeUser = function (name, id) {
     //Ignore ttdashboard bots
-    if (!name.match(/^ttdashboard/) || !name.match(/^@ttstats/)) {
+    if (!name.match(/ttstats/)) {
         if (config.database.usedb) {
             client.query('SELECT greeting FROM ' + config.database.dbname + '.'
                 + config.database.tablenames.holiday + ' WHERE date LIKE CURDATE()',
                 function cbfunc(error, results, fields) {
                     if (results != null && results[0] != null) {
-                        bot.speak(results[0]['greeting'] + ', ' + name + '!');
+                        bot.speak(results[0]['greeting'] + ', ' + name + '! ');
                     } else {
-                        bot.speak(config.responses.greeting + name + '!');
+                        bot.speak(config.responses.greeting + name + '! ');
                     }
             });
         } else {
             bot.speak(config.responses.greeting + name + '!');
         }
-
-    } else if (name.match(/^@ttstats/)) {
-        bot.boot(id, 'FU TTSTATS');
-
     } else {
-        bot.boot(id, 'Say no to robots');
+        bot.boot(id, 'FU TTSTATS');
     }
 }
 

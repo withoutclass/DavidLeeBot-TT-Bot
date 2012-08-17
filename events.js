@@ -87,7 +87,7 @@ exports.updateVoteEventHandler = function (data) {
                 + data.room.metadata.upvotes + ' -' + data.room.metadata.downvotes
                 + ') ' + usersList[data.room.metadata.votelog[0][0]].name + '\u001b[0m');
         } else {
-
+ 
             try {
                 bot.speak(usersList[data.room.metadata.votelog[0][0]].name + ' LAMED THE SONG');
             } catch (err) {
@@ -278,6 +278,16 @@ exports.endSongEventHandler = function (data) {
 exports.newSongEventHandler = function (data) {
     //Populate new song data in currentsong
     populateSongData(data);
+
+    if ((currentsong.artist.indexOf('Skrillex') != -1)
+        || (currentsong.artist.indexOf('skrillex') != -1)
+        || (currentsong.song.indexOf('Skrillex') != -1)
+        || (currentsong.song.indexOf('skrillex') != -1)
+        || (currentsong.song.indexOf('Levels') != -1)
+        || (currentsong.song.indexOf('levels') != -1)) {
+        bot.remDj(currentsong.djid);
+        bot.speak('NO SKRILLEX OR LEVELS');
+    }
 
     //Enforce stepdown rules
     if (usertostep != null) {
