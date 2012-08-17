@@ -709,6 +709,15 @@ global.handleCommand = function(name, userid, text, source) {
         bot.remDj(userid);
     }
 
+    if (text.toLowerCase() == config.botinfo.botname + ', pm me') {
+        var response = ('Hey there dude! Say commands for a full list of commands');
+        output({
+            text: response,
+            destination: 'pm',
+            userid: userid
+        });
+    }
+    
     //Hug bot
     if (text.toLowerCase() == ('hugs ' + config.botinfo.botname)) {
         var rand = Math.random();
