@@ -213,13 +213,18 @@ function initializeModules() {
         var filenames = fs.readdirSync('./commands');
         for (i in filenames) {
             var command = require('./commands/' + filenames[i]);
-            commands.push({
-                name: command.name,
-                handler: command.handler,
-                hidden: command.hidden,
-                enabled: command.enabled,
-                matchStart: command.matchStart
-            });
+            commands.push({name: command.name, copies: command.copies, handler: command.handler,
+                hidden: command.hidden, enabled: command.enabled, matchStart: command.matchStart});
+        }
+        // Handle commands that copy other commands
+        for (copyCommand in commands) {
+            if (commands[copyCommand].copies != null) {
+                for (originalCommand in commands) {
+                    if (commands[originalCommand].name == commands[copyCommand].copies) {
+                        commands[copyCommand].handler = commands[originalCommand].handler;
+                    }
+                }
+            }
         }
     } catch (e) {
         //
