@@ -214,7 +214,15 @@ function initializeModules () {
         var filenames = fs.readdirSync('./commands');
         for (i in filenames) {
             var command = require('./commands/' + filenames[i]);
-            commands.push({name: command.name, handler: command.handler, hidden: command.hidden,
+            var myHandler = command.handler;
+            if (command.copies != null) {
+                for (j in commands) {
+                    if (j.name == command.copies) {
+                        myHandler = j.handler;
+                    }
+                }
+            }
+            commands.push({name: command.name, handler: myHandler, hidden: command.hidden,
                 enabled: command.enabled, matchStart: command.matchStart});
         }
     } catch (e) {
