@@ -210,32 +210,7 @@ function initializeModules () {
     }
     
     //Load commands
-    try {
-        var filenames = fs.readdirSync('./commands');
-        var copyFound = false;
-        for (i in filenames) {
-            var command = require('./commands/' + filenames[i]);
-            commands.push({name: command.name, copies: command.copies, handler: command.handler,
-                hidden: command.hidden, enabled: command.enabled, matchStart: command.matchStart});
-        }
-        // Handle commands that copy other commands
-        for (copyCommand in commands) {
-            if (commands[copyCommand].copies != null) {
-                copyFound = false;
-                for (originalCommand in commands) {
-                    if (commands[originalCommand].name == commands[copyCommand].copies) {
-                        copyFound = true;
-                        commands[copyCommand].handler = commands[originalCommand].handler;
-                    }
-                }
-                if (copyFound == false) {
-                    console.log('Copy command "' + commands[copyCommand].copies + '" for "' + commands[copyCommand].name + '" not found');
-                }
-            }
-        }
-    } catch (e) {
-        //
-    }
+    loadCommands();
     
     //Load http commands
     try {
@@ -247,6 +222,62 @@ function initializeModules () {
         }
     } catch (e) {
         //
+    }
+}
+
+//Loads or reloads commands
+global.loadCommands = function(data) {
+    var newCommands = new Array();
+    var j = 0;
+    var response = '';
+
+    try {
+        var filenames = fs.readdirSync('./commands');
+        var copyFound = false;
+        
+        for (i in filenames) {
+            var command = require('./commands/' + filenames[i]);
+            newCommands.push({name: command.name, copies: command.copies, handler: command.handler,
+                hidden: command.hidden, enabled: command.enabled, matchStart: command.matchStart});
+            j++;
+        }
+        // Handle commands that copy other commands
+        for (copyCommand in newCommands) {
+            if (newCommands[copyCommand].copies != null) {
+                copyFound = false;
+                for (originalCommand in newCommands) {
+                    if (newCommands[originalCommand].name == newCommands[copyCommand].copies) {
+                        copyFound = true;
+                        newCommands[copyCommand].handler = newCommands[originalCommand].handler;
+                    }
+                }
+                if (copyFound == false) {
+                    response = 'Copy command "' + newCommands[copyCommand].copies + '" for "' + newCommands[copyCommand].name + '" not found';
+                    if (data == null) {
+                        console.log(response);
+                    }
+                    else {
+                        output({text: response, destination: data.source, userid: data.userid});
+                    }
+                }
+            }
+        }
+        commands = newCommands;
+        response = j + ' commands loaded.';
+        if (data == null) {
+            console.log(response);
+        }
+        else {
+            output({text: response, destination: data.source, userid: data.userid});
+        }
+    } catch (e) {
+        response = 'Command reload failed: ' + e;
+        if (data == null) {
+            console.log(response);
+        }
+        else {
+            output({text: response, destination: data.source, userid: data.userid});
+        }
     }
 }
 
