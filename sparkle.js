@@ -212,6 +212,7 @@ function initializeModules () {
     //Load commands
     try {
         var filenames = fs.readdirSync('./commands');
+        var copyFound = false;
         for (i in filenames) {
             var command = require('./commands/' + filenames[i]);
             commands.push({name: command.name, copies: command.copies, handler: command.handler,
@@ -220,10 +221,15 @@ function initializeModules () {
         // Handle commands that copy other commands
         for (copyCommand in commands) {
             if (commands[copyCommand].copies != null) {
+                copyFound = false;
                 for (originalCommand in commands) {
                     if (commands[originalCommand].name == commands[copyCommand].copies) {
+                        copyFound = true;
                         commands[copyCommand].handler = commands[originalCommand].handler;
                     }
+                }
+                if (copyFound == false) {
+                    console.log('Copy command "' + commands[copyCommand].copies + '" for "' + commands[copyCommand].name + '" not found');
                 }
             }
         }
