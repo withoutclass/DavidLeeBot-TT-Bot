@@ -210,7 +210,7 @@ function initializeModules () {
     }
     
     //Load commands
-    loadCommands();
+    loadCommands(null);
     
     //Load http commands
     try {
