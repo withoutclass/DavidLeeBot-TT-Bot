@@ -5,5 +5,7 @@ exports.hidden = false;
 exports.enabled = true;
 exports.matchStart = false;
 exports.handler = function(data) {
-    loadCommands(data);
+    if (admincheck(data.userid)) {
+        reloadCommands(data);
+    }
 }

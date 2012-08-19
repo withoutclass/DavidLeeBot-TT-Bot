@@ -281,6 +281,11 @@ function loadCommands (data) {
     }
 }
 
+//Reload commands stub for reload command...
+global.reloadCommands = function(data) {
+        loadCommands(data);
+}
+
 //Sets up the database
 global.setUpDatabase = function() {
     //song table
