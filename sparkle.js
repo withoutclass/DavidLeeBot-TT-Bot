@@ -226,7 +226,7 @@ function initializeModules () {
 }
 
 //Loads or reloads commands
-global.loadCommands = function(data) {
+function loadCommands (data) {
     var newCommands = new Array();
     var j = 0;
     var response = '';
