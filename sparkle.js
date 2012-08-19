@@ -438,7 +438,9 @@ global.addToDb = function (data) {
 global.welcomeUser = function (name, id) {
     //Ignore ttdashboard bots
     if (!name.match(/^@ttstats/)) {
-        if (id == '4f5628b9a3f7515810008122') {
+        if (id == botinfo.userid) {
+            bot.speak("I'm back!");
+        else if (id == '4f5628b9a3f7515810008122') {
             bot.speak(':cat: <3 :wolf:');
         }
         else if (id == '4df0443f4fe7d0631905d6a8') {
