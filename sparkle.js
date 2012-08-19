@@ -440,6 +440,7 @@ global.welcomeUser = function (name, id) {
     if (!name.match(/^@ttstats/)) {
         if (id == botinfo.userid) {
             bot.speak("I'm back!");
+        }
         else if (id == '4f5628b9a3f7515810008122') {
             bot.speak(':cat: <3 :wolf:');
         }
