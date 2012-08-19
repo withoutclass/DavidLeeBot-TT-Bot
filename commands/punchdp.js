@@ -8,12 +8,15 @@ exports.handler = function(data) {
         // Is DP in room?
         var DPisHere = false;
         for (i in usersList) {
-            if (usersList[i].id = '4e132721a3f75114de033e4b') {
+            if (i == '4e132721a3f75114de033e4b') {
                 DPisHere = true;
             }
         }
         if (DPisHere) {
             bot.speak('/me punches DP');
+        }
+        else {
+            output({text: 'DP is not here', destination: data.source, userid: data.userid});
         }
     }
 }
