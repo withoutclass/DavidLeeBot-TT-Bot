@@ -16,7 +16,7 @@
  *
 */
 var args = process.argv;
-global.version = '[Sparkle] Version 1.0.7';
+global.version = '[Sparkle/DLB] Version 1.0.8';
 
 global.fs = require('fs');
 global.url = require('url'); 
@@ -851,7 +851,8 @@ global.afkCheck = function() {
         dj = djs[i];
         if (dj.id != config.botinfo.userid) {
             if (usersList[dj.id].warned) {
-                if (isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
+                if (isAFK(dj.id, afkLimitDown) && currentsong.djid != dj.id) {
+                    // DJ is AFK longer than the limit to step down
                     bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
                     bot.remDj(dj.id); // remove them
                 }
