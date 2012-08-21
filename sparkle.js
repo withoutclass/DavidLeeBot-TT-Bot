@@ -809,8 +809,10 @@ global.botStopDJ = function() {
 }
 
 global.justActive = function(userid) {
-    usersList[userid].lastActivity = new Date();
-	usersList[userid].warned = false;
+    if (usersList[userid] != null) {
+        usersList[userid].lastActivity = new Date();
+    	usersList[userid].warned = false;
+    }
 }
 
 global.addDJToList = function(DJid) {
