@@ -148,7 +148,7 @@ exports.registeredEventHandler = function (data) {
             [user.userid, user.name]);
     
     //See if banned
-        client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\')'
+        client.query('SELECT userid, banned_by, DATE_FORMAT(timestamp, \'%c/%e/%y\') AS timestamp'
             + ' FROM BANNED_USERS WHERE userid LIKE \'' + user.userid + '\'',
         function cb (error, results, fields) {
             if (results != null && results.length > 0) {
