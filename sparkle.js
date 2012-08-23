@@ -17,7 +17,7 @@
  */
 
 var args = process.argv;
-global.version = '[Sparkle] Version 1.0.7';
+global.version = '[Sparkle/DLB] Version 1.0.8';
 
 global.fs = require('fs');
 global.url = require('url');
@@ -209,42 +209,81 @@ function initializeModules() {
     }
 
     //Load commands
-    try {
-        var filenames = fs.readdirSync('./commands');
-        for (i in filenames) {
-            var command = require('./commands/' + filenames[i]);
-            commands.push({name: command.name, copies: command.copies, handler: command.handler,
-                hidden: command.hidden, enabled: command.enabled, matchStart: command.matchStart});
-        }
-        // Handle commands that copy other commands
-        for (copyCommand in commands) {
-            if (commands[copyCommand].copies != null) {
-                for (originalCommand in commands) {
-                    if (commands[originalCommand].name == commands[copyCommand].copies) {
-                        commands[copyCommand].handler = commands[originalCommand].handler;
-                    }
-                }
-            }
-        }
-    } catch (e) {
-        //
-    }
-
+    loadCommands(null);
+    
     //Load http commands
     try {
         var filenames = fs.readdirSync('./api');
         for (i in filenames) {
             var command = require('./api/' + filenames[i]);
-            httpcommands.push({
-                name: command.name,
-                handler: command.handler,
-                hidden: command.hidden,
-                enabled: command.enabled
-            });
+            httpcommands.push({name: command.name, handler: command.handler, hidden: command.hidden,
+                enabled: command.enabled});
         }
     } catch (e) {
         //
     }
+}
+
+//Loads or reloads commands
+function loadCommands (data) {
+    var newCommands = new Array();
+    var j = 0;
+    var response = '';
+
+    try {
+        var filenames = fs.readdirSync('./commands');
+        var copyFound = false;
+        
+        for (i in filenames) {
+            var command = require('./commands/' + filenames[i]);
+            newCommands.push({name: command.name, copies: command.copies, handler: command.handler,
+                hidden: command.hidden, enabled: command.enabled, matchStart: command.matchStart});
+            j++;
+        }
+        // Handle commands that copy other commands
+        for (copyCommand in newCommands) {
+            if (newCommands[copyCommand].copies != null) {
+                copyFound = false;
+                for (originalCommand in newCommands) {
+                    if (newCommands[originalCommand].name == newCommands[copyCommand].copies) {
+                        copyFound = true;
+                        newCommands[copyCommand].handler = newCommands[originalCommand].handler;
+                    }
+                }
+                if (copyFound == false) {
+                    response = 'Copy command "' + newCommands[copyCommand].copies + '" for "' + newCommands[copyCommand].name + '" not found';
+                    if (data == null) {
+                        console.log(response);
+                    }
+                    else {
+                        output({text: response, destination: data.source, userid: data.userid});
+                    }
+                }
+            }
+        }
+
+        commands = newCommands;
+        response = j + ' commands loaded.';
+        if (data == null) {
+            console.log(response);
+        }
+        else {
+            output({text: response, destination: data.source, userid: data.userid});
+        }
+    } catch (e) {
+        response = 'Command reload failed: ' + e;
+        if (data == null) {
+            console.log(response);
+        }
+        else {
+            output({text: response, destination: data.source, userid: data.userid});
+        }
+    }
+}
+
+//Reload commands stub for reload command...
+global.reloadCommands = function(data) {
+        loadCommands(data);
 }
 
 //Sets up the database
@@ -365,7 +404,10 @@ global.addToDb = function(data) {
 global.welcomeUser = function(name, id) {
     //Ignore ttdashboard bots
     if (!name.match(/^@ttstats/)) {
-        if (id == '4f5628b9a3f7515810008122') {
+        if (id == config.botinfo.userid) {
+            bot.speak("I'm back!");
+        }
+        else if (id == '4f5628b9a3f7515810008122') {
             bot.speak(':cat: <3 :wolf:');
         } else if (id == '4df0443f4fe7d0631905d6a8') {
             bot.speak(':cat: <3 ' + name);
@@ -775,8 +817,11 @@ global.botStopDJ = function() {
 }
 
 global.justActive = function(userid) {
-    usersList[userid].lastActivity = new Date();
-    usersList[userid].warned = false;
+
+    if (usersList[userid] != null) {
+        usersList[userid].lastActivity = new Date();
+    	usersList[userid].warned = false;
+    }
 }
 
 global.addDJToList = function(DJid) {
@@ -817,7 +862,8 @@ global.afkCheck = function() {
         dj = djs[i];
         if (dj.id != config.botinfo.userid) {
             if (usersList[dj.id].warned) {
-                if (isAFK(dj.id, afkLimitDown)) { // DJ is AFK longer than the limit to step down
+                if (isAFK(dj.id, afkLimitDown) && currentsong.djid != dj.id) {
+                    // DJ is AFK longer than the limit to step down
                     bot.speak('@' + usersList[dj.id].name + ' was idle too long.');
                     bot.remDj(dj.id); // remove them
                 }
