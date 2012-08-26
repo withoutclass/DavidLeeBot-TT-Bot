@@ -442,36 +442,37 @@ global.enforceRoom = function() {
     }, 15000);
 }
 
-global.reducePastDJCounts = function(djid) {
+global.reducePastDJCounts = function (djid) {
     //First, decrement last DJ count by 1. Set to remove if they need to step down
     for (i in djs) {
-        if (djs[i].id == djid && djs.length == 5) {
+        if (djs[i].id == djid) {
             djs[i].remaining--;
-        }
-        if (djs[i].remaining <= 0 && waitlist.length > 0 && usertostep == null) {
-            userstepped = false;
-            usertostep = djs[i].id;
-        }
-    }
-}
-
-//Reduces past DJ counts and removes from past dj list if necessary
-if (config.enforcement.stepuprules.waittostepup) {
-
-    //Decrease count in pastdjs list by 1
-    if (config.enforcement.stepuprules.waittype == 'SONGS') {
-        for (i in pastdjs) {
-            pastdjs[i].wait--;
-        }
-
-        //Remove if they're done waiting
-        for (i in pastdjs) {
-            if (pastdjs[i].wait < 1) {
-                pastdjs.splice(i, 1);
+            if (djs[i].remaining <= 0) {
+                userstepped = false;
+                usertostep = djid;
             }
         }
-    } else if (config.enforcement.stepuprules.waittype == 'MINUTES') {
-        //tbh nothing should be here
+    }
+    
+    //Reduces past DJ counts and removes from past dj list if necessary
+    if (config.enforcement.stepuprules.waittostepup) {
+    
+        //Decrease count in pastdjs list by 1
+        if (config.enforcement.stepuprules.waittype == 'SONGS') {
+            for (i in pastdjs) {
+                pastdjs[i].wait--;
+            }
+            
+            //Remove if they're done waiting
+            for (i in pastdjs) {
+                if (pastdjs[i].wait < 1) {
+                    pastdjs.splice(i, 1);
+                }
+            }
+        }
+        else if (config.enforcement.stepuprules.waittype == 'MINUTES') {
+            //tbh nothing should be here
+        }
     }
 }
 
